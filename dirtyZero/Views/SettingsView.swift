@@ -15,7 +15,8 @@ struct SettingsView: View {
     @AppStorage("showLogs") var showLogs: Bool = true
     @AppStorage("showDebugSettings") var showDebugSettings: Bool = false
     @AppStorage("showRiskyTweaks") var showRiskyTweaks: Bool = false
-    @AppStorage("respringAppBID") var respringAppBID: String = "com.respring.app"
+    @AppStorage("useRespringApp") var useRespringApp: Bool = false
+    @AppStorage("respringAppBID") var respringAppBID: String = "com.jbdotparty.respringr"
     @AppStorage("changeRespringAppBID") var changeRespringAppBundleID: Bool = false
     @Environment(\.openURL) var openURL
     @Environment(\.dismiss) var dismiss
@@ -55,13 +56,15 @@ struct SettingsView: View {
                     LinkCreditCell(image: "skadz108", name: "Skadz", text: "Initial developer, backend, and exploit-related management.", link: "https://github.com/skadz108")
                     LinkCreditCell(image: "lunginspector", name: "lunginspector", text: "Frontend developer, tweak creator, and app UI.", link: "https://github.com/skadz108")
                     LinkCreditCell(image: "ianbeer", name: "Ian Beer (Gooogle Project Zero)", text: "Discovering & publishing CVE-2025-24203.", link: "https://project-zero.issues.chromium.org/issues/391518636")
+                    LinkCreditCell(image: "neonmodder123", name: "neonmodder123", text: "Developed WebView respring method.", link: "https://github.com/neonmodder123")
                 }
-                Section(header: HeaderLabel(text: "Settings", icon: "gearshape")) {
+                Section(header: HeaderLabel(text: "Settings", icon: "gearshape"), footer: Text("If you are unable to respring using the WebView method, you can try the old RespringApp method. Requires [respringr](https://github.com/jailbreakdotparty/dirtyZero/releases/tag/respringr) installed.")) {
                     Toggle("Show Risky Tweaks", isOn: $showRiskyTweaks)
                         .disabled(weOnADebugBuild)
                     Toggle("Show Debug Settings", isOn: $showDebugSettings)
                         .disabled(weOnADebugBuild)
                     Toggle("Show Logs", isOn: $showLogs)
+                    Toggle("Use RespringApp", isOn: $useRespringApp)
                 }
                 Section(header: HeaderLabel(text: "Actions", icon: "hammer")) {
                     VStack(spacing: 10) {
@@ -82,9 +85,11 @@ struct SettingsView: View {
                         }
                         .buttonStyle(GlassyButtonStyle(color: .red))
                     }
-                    Toggle("Change Respring App Bundle ID", isOn: $changeRespringAppBundleID)
-                    if changeRespringAppBundleID {
-                        TextField("Respring App Bundle ID", text: $respringAppBID)
+                    if useRespringApp {
+                        Toggle("Change Respring App Bundle ID", isOn: $changeRespringAppBundleID)
+                        if changeRespringAppBundleID {
+                            TextField("Respring App Bundle ID", text: $respringAppBID)
+                        }
                     }
                 }
             }

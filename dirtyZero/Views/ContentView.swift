@@ -35,6 +35,8 @@ struct ContentView: View {
     @State private var showCustomTweaksPopover: Bool = false
     @State private var debugSettingsExpanded: Bool = false
     
+    @State private var showRespringView: Bool = false
+    
     @State private var statusMessage: String = ""
     @State private var statusDescription: String = ""
     @State private var statusIcon: String = ""
@@ -45,7 +47,8 @@ struct ContentView: View {
     @AppStorage("showLogs") private var showLogs: Bool = true
     @AppStorage("showDebugSettings") private var showDebugSettings: Bool = false
     @AppStorage("showRiskyTweaks") private var showRiskyTweaks: Bool = false
-    @AppStorage("respringAppBID") private var respringAppBID: String = "com.respring.app"
+    @AppStorage("useRespringApp") var useRespringApp: Bool = false
+    @AppStorage("respringAppBID") private var respringAppBID: String = "com.jbdotparty.respringr"
     @AppStorage("customTweaks") private var customTweaks: [ZeroTweak] = []
     
     private var tweaks: [ZeroTweak] {
@@ -267,9 +270,14 @@ struct ContentView: View {
                             .buttonStyle(GlassyButtonStyle(color: .red, isMaterialButton: true))
                             Button(action: {
                                 Haptic.shared.play(.heavy)
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                if !useRespringApp {
+                                    // use WebView method
+                                    showRespringView = true
+                                } else {
                                     if isDatAppInstalled(respringAppBID) {
                                         LSApplicationWorkspace.default().openApplication(withBundleID: respringAppBID)
+                                    } else if isDatAppInstalled("com.respring.app") { // check if old respringapp is installed
+                                        LSApplicationWorkspace.default().openApplication(withBundleID: "com.respring.app")
                                     } else {
                                         Alertinator.shared.alert(title: "RespringApp Not Detected", body: "Make sure you have RespringApp installed, then try again.")
                                     }
@@ -327,6 +335,9 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showCustomTweaksPopover) {
                 CustomTweaksView()
+            }
+            .fullScreenCover(isPresented: $showRespringView) {
+                RespringView()
             }
         }
     }
@@ -397,7 +408,6 @@ struct ContentView: View {
             return false
         }
         
-        print("[*] here comes the super secret trollstore detector \"sandbox escape\" app store edition")
         let sbsFunction = unsafeBitCast(sbsAddr, to: SBSLaunchFunction.self)
         
         let result = sbsFunction(bundleID, nil, nil, nil, true)

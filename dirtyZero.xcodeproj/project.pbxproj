@@ -10,6 +10,7 @@
 		157E1DFE2F2B138600E52180 /* PartyUI in Frameworks */ = {isa = PBXBuildFile; productRef = 157E1DFD2F2B138600E52180 /* PartyUI */; };
 		4305D0D62DCDDD7000399896 /* DeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4305D0D52DCDDD7000399896 /* DeviceKit */; };
 		435DD12F2DDD7DF00058DFCA /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 435DD12E2DDD7DF00058DFCA /* MobileCoreServices.framework */; };
+		43C255422F887AAE00BD7418 /* PartyUI in Frameworks */ = {isa = PBXBuildFile; productRef = 43C255412F887AAE00BD7418 /* PartyUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				157E1DFE2F2B138600E52180 /* PartyUI in Frameworks */,
+				43C255422F887AAE00BD7418 /* PartyUI in Frameworks */,
 				435DD12F2DDD7DF00058DFCA /* MobileCoreServices.framework in Frameworks */,
 				4305D0D62DCDDD7000399896 /* DeviceKit in Frameworks */,
 			);
@@ -86,6 +88,7 @@
 			packageProductDependencies = (
 				4305D0D52DCDDD7000399896 /* DeviceKit */,
 				157E1DFD2F2B138600E52180 /* PartyUI */,
+				43C255412F887AAE00BD7418 /* PartyUI */,
 			);
 			productName = dirtyZero;
 			productReference = 4397F9512DCDDA0100090799 /* dirtyZero.app */;
@@ -118,7 +121,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				4305D0D42DCDDD7000399896 /* XCRemoteSwiftPackageReference "DeviceKit" */,
-				157E1DFC2F2B138600E52180 /* XCLocalSwiftPackageReference "../../Packages/PartyUI" */,
+				43C255402F887AAE00BD7418 /* XCLocalSwiftPackageReference "../PartyUI-old" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4397F9522DCDDA0100090799 /* Products */;
@@ -279,7 +282,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = TA2N4LNLT8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = dirtyZero;
@@ -294,8 +297,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
-				PRODUCT_BUNDLE_IDENTIFIER = com.jbdotparty.dirtyZero;
+				MARKETING_VERSION = 1.4;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jbdotparty.dirtyZero00;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = dirtyZero/bridge.h;
@@ -314,7 +317,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = TA2N4LNLT8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = dirtyZero;
@@ -329,8 +332,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
-				PRODUCT_BUNDLE_IDENTIFIER = com.jbdotparty.dirtyZero;
+				MARKETING_VERSION = 1.4;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jbdotparty.dirtyZero00;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = dirtyZero/bridge.h;
@@ -363,9 +366,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		157E1DFC2F2B138600E52180 /* XCLocalSwiftPackageReference "../../Packages/PartyUI" */ = {
+		43C255402F887AAE00BD7418 /* XCLocalSwiftPackageReference "../PartyUI-old" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../Packages/PartyUI;
+			relativePath = "../PartyUI-old";
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -389,6 +392,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4305D0D42DCDDD7000399896 /* XCRemoteSwiftPackageReference "DeviceKit" */;
 			productName = DeviceKit;
+		};
+		43C255412F887AAE00BD7418 /* PartyUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PartyUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
