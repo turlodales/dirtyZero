@@ -42,11 +42,11 @@ struct TweakSectionList: View {
     let device = Device.current
     
     var body: some View {
-        Section(header: HeaderDropdown(text: sectionLabel, icon: sectionIcon, useCount: true, itemCount: tweakCount, isExpanded: $isExpanded)) {
+        Section(header: HeaderDropdown(text: sectionLabel, icon: sectionIcon, isExpanded: $isExpanded, useItemCount: true, itemCount: tweakCount)) {
             if isExpanded {
                 Group {
                     if isRiskyTweak {
-                        ContextualWarning(icon: "exclamationmark.triangle", label: "Warning!", text: "These tweaks will temporarily break system functionality.", color: .red)
+                        CompactAlert(label: "Warning!", icon: "exclamationmark.triangle", text: "These tweaks will temporarily break system functionality.", color: .red)
                     }
                     let color: Color = isRiskyTweak ? .red : isCustomTweak ? .purple : .accentColor
                     
@@ -63,10 +63,10 @@ struct TweakSectionList: View {
                                         .lineLimit(1)
                                         .scaledToFit()
                                     Spacer()
-                                    AnimatedToggle(isOn: isTweakEnabled(tweak))
+                                    AnimatedCheckmark(isOn: isTweakEnabled(tweak))
                                 }
                                 .foregroundStyle(color)
-                                .modifier(GlassyListRowBackground(color: color))
+                                .modifier(ListTogglePlatter())
                                 .contextMenu {
                                     Button(action: {
                                         Alertinator.shared.alert(title: tweak.name, body: tweak.paths.joined(separator: ", "))

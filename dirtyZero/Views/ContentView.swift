@@ -88,7 +88,8 @@ struct ContentView: View {
                                     .fontWeight(.medium)
                             }
                             if showLogs {
-                                TerminalContainer(content: VStack { LogView() })
+                                LogView()
+                                    .modifier(TerminalPlatter())
                             } else {
                                 Text(statusDescription)
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -104,7 +105,7 @@ struct ContentView: View {
                                         Text("\(device.systemName!) \(device.systemVersion!)")
                                     }
                                     .frame(maxWidth: .infinity)
-                                    .modifier(GlassyPlatter(shape: AnyShape(.rect(cornerRadius: smallPlatterCornerRadius())), useCustomPadding: true))
+                                    .modifier(SmallInfoPlatter())
                                     HStack {
                                         Image(systemName: "wrench.and.screwdriver")
                                             .frame(width: 20, height: 20)
@@ -115,12 +116,12 @@ struct ContentView: View {
                                         }
                                     }
                                     .frame(maxWidth: .infinity)
-                                    .modifier(GlassyPlatter(shape: AnyShape(.rect(cornerRadius: smallPlatterCornerRadius())), useCustomPadding: true))
+                                    .modifier(SmallInfoPlatter())
                                 }
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .modifier(GlassyPlatter())
+                        .modifier(SectionPlatter())
                         .listRowBackground(Color.clear)
                         .listRowInsets(device.isPad ? .dropdownRowInsets : .zeroInsets)
                         if device.isPad {
@@ -131,7 +132,7 @@ struct ContentView: View {
                                     Text("\(device.systemName!) \(device.systemVersion!)")
                                 }
                                 .frame(maxWidth: .infinity)
-                                .modifier(GlassyPlatter(shape: AnyShape(.rect(cornerRadius: smallPlatterCornerRadius())), useCustomPadding: true))
+                                .modifier(SmallInfoPlatter())
                                 HStack {
                                     Image(systemName: "wrench.and.screwdriver")
                                         .frame(width: 20, height: 20)
@@ -142,7 +143,7 @@ struct ContentView: View {
                                     }
                                 }
                                 .frame(maxWidth: .infinity)
-                                .modifier(GlassyPlatter(shape: AnyShape(.rect(cornerRadius: smallPlatterCornerRadius())), useCustomPadding: true))
+                                .modifier(SmallInfoPlatter())
                             }
                         }
                     }
@@ -163,7 +164,7 @@ struct ContentView: View {
                             }) {
                                 ButtonLabel(text: "Apply Tweaks", icon: "checkmark")
                             }
-                            .buttonStyle(GlassyButtonStyle(color: enabledTweaks.isEmpty ? .gray : .green, isMaterialButton: true))
+                            .buttonStyle(TranslucentButtonStyle(color: enabledTweaks.isEmpty ? .gray : .green))
                             HStack {
                                 Button(action: {
                                     Haptic.shared.play(.soft)
@@ -173,7 +174,7 @@ struct ContentView: View {
                                 }) {
                                     ButtonLabel(text: "Remove", icon: "xmark")
                                 }
-                                .buttonStyle(GlassyButtonStyle(color: .red, isMaterialButton: true))
+                                .buttonStyle(TranslucentButtonStyle(color: .red))
                                 Button(action: {
                                     Haptic.shared.play(.heavy)
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -186,7 +187,7 @@ struct ContentView: View {
                                 }) {
                                     ButtonLabel(text: "Respring", icon: "goforward")
                                 }
-                                .buttonStyle(GlassyButtonStyle(color: .orange, isMaterialButton: true))
+                                .buttonStyle(TranslucentButtonStyle(color: .orange))
                             }
                         }
                     }
@@ -199,7 +200,7 @@ struct ContentView: View {
                         if debugSettingsExpanded {
                             VStack {
                                 HStack {
-                                    GlassyTextButtonField(titleKey: "/path/to/zero", text: $customZeroPath, button: Group {
+                                    PrimaryTextFieldButton(titleKey: "/path/to/zero", text: $customZeroPath, button: {
                                         Button(action: {
                                             Haptic.shared.play(.soft)
                                             customZeroPath = UIPasteboard.general.string ?? ""
@@ -222,7 +223,8 @@ struct ContentView: View {
                                         Image(systemName: "checkmark")
                                             .frame(width: 18, height: 24)
                                     }
-                                    .buttonStyle(GlassyButtonStyle(isDisabled: customZeroPath.isEmpty, useFullWidth: false))
+                                    .buttonStyle(TranslucentButtonStyle(useFullWidth: false))
+                                    .disabled(customZeroPath.isEmpty)
                                 }
                                 Button(action: {
                                     Haptic.shared.play(.soft)
@@ -230,7 +232,7 @@ struct ContentView: View {
                                 }) {
                                     ButtonLabel(text: "Print Debug Info", icon: "ant")
                                 }
-                                .buttonStyle(GlassyButtonStyle())
+                                .buttonStyle(TranslucentButtonStyle())
                             }
                         }
                     }
@@ -257,7 +259,7 @@ struct ContentView: View {
                         }) {
                             ButtonLabel(text: "Apply Tweaks", icon: "checkmark")
                         }
-                        .buttonStyle(GlassyButtonStyle(color: enabledTweaks.isEmpty ? .gray : .green, isMaterialButton: true))
+                        .buttonStyle(TranslucentButtonStyle(color: enabledTweaks.isEmpty ? .gray : .green))
                         HStack {
                             Button(action: {
                                 Haptic.shared.play(.soft)
@@ -267,7 +269,7 @@ struct ContentView: View {
                             }) {
                                 ButtonLabel(text: "Remove", icon: "xmark")
                             }
-                            .buttonStyle(GlassyButtonStyle(color: .red, isMaterialButton: true))
+                            .buttonStyle(TranslucentButtonStyle(color: .red))
                             Button(action: {
                                 Haptic.shared.play(.heavy)
                                 if !useRespringApp {
@@ -285,7 +287,7 @@ struct ContentView: View {
                             }) {
                                 ButtonLabel(text: "Respring", icon: "goforward")
                             }
-                            .buttonStyle(GlassyButtonStyle(color: .orange, isMaterialButton: true))
+                            .buttonStyle(TranslucentButtonStyle(color: .orange))
                         }
                     }
                     .modifier(OverlayBackground())

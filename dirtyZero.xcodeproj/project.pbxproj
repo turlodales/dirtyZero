@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		157E1DFE2F2B138600E52180 /* PartyUI in Frameworks */ = {isa = PBXBuildFile; productRef = 157E1DFD2F2B138600E52180 /* PartyUI */; };
+		15CBF2B12F8F113300473207 /* PartyUI in Frameworks */ = {isa = PBXBuildFile; productRef = 15CBF2B02F8F113300473207 /* PartyUI */; };
 		4305D0D62DCDDD7000399896 /* DeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4305D0D52DCDDD7000399896 /* DeviceKit */; };
 		435DD12F2DDD7DF00058DFCA /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 435DD12E2DDD7DF00058DFCA /* MobileCoreServices.framework */; };
 		43C255422F887AAE00BD7418 /* PartyUI in Frameworks */ = {isa = PBXBuildFile; productRef = 43C255412F887AAE00BD7418 /* PartyUI */; };
@@ -33,6 +34,7 @@
 			files = (
 				157E1DFE2F2B138600E52180 /* PartyUI in Frameworks */,
 				43C255422F887AAE00BD7418 /* PartyUI in Frameworks */,
+				15CBF2B12F8F113300473207 /* PartyUI in Frameworks */,
 				435DD12F2DDD7DF00058DFCA /* MobileCoreServices.framework in Frameworks */,
 				4305D0D62DCDDD7000399896 /* DeviceKit in Frameworks */,
 			);
@@ -89,6 +91,7 @@
 				4305D0D52DCDDD7000399896 /* DeviceKit */,
 				157E1DFD2F2B138600E52180 /* PartyUI */,
 				43C255412F887AAE00BD7418 /* PartyUI */,
+				15CBF2B02F8F113300473207 /* PartyUI */,
 			);
 			productName = dirtyZero;
 			productReference = 4397F9512DCDDA0100090799 /* dirtyZero.app */;
@@ -121,7 +124,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				4305D0D42DCDDD7000399896 /* XCRemoteSwiftPackageReference "DeviceKit" */,
-				43C255402F887AAE00BD7418 /* XCLocalSwiftPackageReference "../PartyUI-old" */,
+				15CBF2AF2F8F113300473207 /* XCLocalSwiftPackageReference "../../Packages/PartyUI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4397F9522DCDDA0100090799 /* Products */;
@@ -366,9 +369,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		43C255402F887AAE00BD7418 /* XCLocalSwiftPackageReference "../PartyUI-old" */ = {
+		15CBF2AF2F8F113300473207 /* XCLocalSwiftPackageReference "../../Packages/PartyUI" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = "../PartyUI-old";
+			relativePath = ../../Packages/PartyUI;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -385,6 +388,10 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		157E1DFD2F2B138600E52180 /* PartyUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PartyUI;
+		};
+		15CBF2B02F8F113300473207 /* PartyUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PartyUI;
 		};

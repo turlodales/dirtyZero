@@ -26,37 +26,37 @@ struct SettingsView: View {
             List {
                 Section(header: HeaderLabel(text: "About", icon: "info.circle")) {
                     VStack(spacing: 10) {
-                        AppInfoCell(imageName: "dirtyZero", title: "dirtyZero", subtitle: "Version \(UIApplication.appVersion!) (\(weOnADebugBuild ? "Debug" : "Release"))")
+                        AppInfoCell()
                         Button(action: {
                             Haptic.shared.play(.soft)
                             openURL(URL(string: "https://jailbreak.party")!)
                         }) {
                             ButtonLabel(text: "Website", icon: "globe")
                         }
-                        .buttonStyle(GlassyButtonStyle(color: .blue))
+                        .buttonStyle(TranslucentButtonStyle(color: .blue))
                         HStack {
                             Button(action: {
                                 Haptic.shared.play(.soft)
                                 openURL(URL(string: "https://jailbreak.party/discord")!)
                             }) {
-                                ButtonLabel(text: "Discord", icon: "discord", isRegularImage: true)
+                                ButtonLabel(text: "Discord", icon: "discord", useImage: true)
                             }
-                            .buttonStyle(GlassyButtonStyle(color: .discord))
+                            .buttonStyle(TranslucentButtonStyle(color: .discord))
                             Button(action: {
                                 Haptic.shared.play(.soft)
                                 openURL(URL(string: "https://github.com/jailbreakdotparty/dirtyZero")!)
                             }) {
-                                ButtonLabel(text: "GitHub", icon: "github", isRegularImage: true)
+                                ButtonLabel(text: "GitHub", icon: "github", useImage: true)
                             }
-                            .buttonStyle(GlassyButtonStyle(color: .gitHub))
+                            .buttonStyle(TranslucentButtonStyle(color: .gitHub))
                         }
                     }
                 }
                 Section(header: HeaderLabel(text: "Credits", icon: "person")) {
-                    LinkCreditCell(image: "skadz108", name: "Skadz", text: "Initial developer, backend, and exploit-related management.", link: "https://github.com/skadz108")
-                    LinkCreditCell(image: "lunginspector", name: "lunginspector", text: "Frontend developer, tweak creator, and app UI.", link: "https://github.com/skadz108")
-                    LinkCreditCell(image: "ianbeer", name: "Ian Beer (Gooogle Project Zero)", text: "Discovering & publishing CVE-2025-24203.", link: "https://project-zero.issues.chromium.org/issues/391518636")
-                    LinkCreditCell(image: "neonmodder123", name: "neonmodder123", text: "Developed WebView respring method.", link: "https://github.com/neonmodder123")
+                    LinkCreditCell(image: Image("skadz108"), name: "Skadz", description: "Initial developer, backend, and exploit-related management.", url: "https://github.com/skadz108")
+                    LinkCreditCell(image: Image("lunginspector"), name: "lunginspector", description: "Frontend developer, tweak creator, and app UI.", url: "https://github.com/skadz108")
+                    LinkCreditCell(image: Image("ianbeer"), name: "Ian Beer (Gooogle Project Zero)", description: "Discovering & publishing CVE-2025-24203.", url: "https://project-zero.issues.chromium.org/issues/391518636")
+                    LinkCreditCell(image: Image("neonmodder123"), name: "neonmodder123", description: "Developed WebView respring method.", url: "https://github.com/neonmodder123")
                 }
                 Section(header: HeaderLabel(text: "Settings", icon: "gearshape"), footer: Text("If you are unable to respring using the WebView method, you can try the old RespringApp method. Requires [respringr](https://github.com/jailbreakdotparty/dirtyZero/releases/tag/respringr) installed.")) {
                     Toggle("Show Risky Tweaks", isOn: $showRiskyTweaks)
@@ -74,7 +74,7 @@ struct SettingsView: View {
                         }) {
                             ButtonLabel(text: "Reset Selected Tweaks", icon: "trash")
                         }
-                        .buttonStyle(GlassyButtonStyle(color: .orange))
+                        .buttonStyle(TranslucentButtonStyle(color: .orange))
                         Button(action: {
                             Haptic.shared.play(.heavy)
                             Alertinator.shared.alert(title: "Are you sure you want to do this?", body: "This will permanently remove all custom tweaks that you have created.", actionLabel: "Continue", action: {
@@ -83,7 +83,7 @@ struct SettingsView: View {
                         }) {
                             ButtonLabel(text: "Remove Custom Tweaks", icon: "paintpalette")
                         }
-                        .buttonStyle(GlassyButtonStyle(color: .red))
+                        .buttonStyle(TranslucentButtonStyle(color: .red))
                     }
                     if useRespringApp {
                         Toggle("Change Respring App Bundle ID", isOn: $changeRespringAppBundleID)

@@ -33,9 +33,9 @@ struct CustomTweaksView: View {
                 Section(header: HeaderLabel(text: "Tweak Info", icon: "info.circle")) {
                     VStack(spacing: 10) {
                         TextField("Tweak Name", text: $tweakName)
-                            .textFieldStyle(GlassyTextFieldStyle())
+                            .modifier(PrimaryTextFieldStyle())
                         HStack {
-                            GlassyTextButtonField(titleKey: "/path/to/zero", text: $path2Add, useAutoCorrection: false, useAutoCaptialization: false, button: Group {
+                            PrimaryTextFieldButton(titleKey: "/path/to/zero", text: $path2Add, button: {
                                 Button(action: {
                                     Haptic.shared.play(.soft)
                                     path2Add = UIPasteboard.general.string ?? ""
@@ -51,7 +51,8 @@ struct CustomTweaksView: View {
                                 Image(systemName: "plus")
                                     .frame(height: 24)
                             }
-                            .buttonStyle(GlassyButtonStyle(isDisabled: path2Add.isEmpty || tweakName.isEmpty, useFullWidth: false))
+                            .buttonStyle(TranslucentButtonStyle())
+                            .disabled(path2Add.isEmpty || tweakName.isEmpty)
                         }
                     }
                 }
@@ -73,7 +74,7 @@ struct CustomTweaksView: View {
                             }
                             .buttonStyle(.plain)
                         }
-                        .modifier(GlassyListRowBackground())
+                        .modifier(ListTogglePlatter())
                     }
                 }
                 .listRowSeparator(.hidden)
@@ -109,7 +110,7 @@ struct CustomTweaksView: View {
                     }) {
                         ButtonLabel(text: "Add Tweak", icon: "plus")
                     }
-                    .buttonStyle(GlassyButtonStyle(color: tweakName.isEmpty || targetPaths.isEmpty ? .gray : .accentColor, isMaterialButton: true))
+                    .buttonStyle(TranslucentButtonStyle(color: tweakName.isEmpty || targetPaths.isEmpty ? .gray : .accentColor))
                 }
                 .modifier(OverlayBackground(stickBottomPadding: device.isPad ? true : false))
             }
