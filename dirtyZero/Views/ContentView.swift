@@ -10,6 +10,243 @@ import PartyUI
 import DeviceKit
 import UIKit
 
+enum SectionType {
+    case custom, risky, normal
+}
+
+struct ContentView: View {
+    @EnvironmentObject var mgr: dirtyZeroManager
+    @EnvironmentObject var theme: AppTheme
+    
+    @AppStorage("tweakArray") var tweakArray: [ZeroSection] = TweakArray.tweaks
+    
+    @AppStorage("enableDebugSettings") var enableDebugSettings: Bool = false
+    @AppStorage("enableRiskyTweaks") var enableRiskyTweaks: Bool = false
+    @AppStorage("showLogs") var showLogs: Bool = true
+    
+    @State private var customZeroPath: String = ""
+    
+    @State private var showSettingsView: Bool = false
+    @State private var showCustomTweaksView: Bool = false
+    @State private var showTweakInfoView: Bool = false
+    
+    @State private var selectedTweak: ZeroTweak = ZeroTweak(name: "", icon: "", paths: [])
+    
+    let version = doubleSystemVersion()
+    
+    var body: some View {
+        NavigationStack {
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                List {
+                    ApplyingSection
+                        .listRowSeparator(.hidden)
+                    if enableDebugSettings {
+                        DebuggingSection
+                            .listRowSeparator(.hidden)
+                    }
+                    ListedTweaksSection
+                        .listRowSeparator(.hidden)
+                }
+                .listStyle(.plain)
+                .navigationTitle("dirtyZero")
+                .safeAreaInset(edge: .bottom) {
+                    ApplyingButtons
+                        .modifier(OverlayBackground())
+                }
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button(action: { showSettingsView.toggle() }) {
+                            Image(systemName: "gear")
+                        }
+                        .modifier(SolariumButtonTint())
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button(action: { showCustomTweaksView.toggle() }) {
+                            Image(systemName: "paintbrush")
+                        }
+                        .modifier(SolariumButtonTint())
+                    }
+                }
+            } else {
+                
+            }
+        }
+        .onChange(of: tweakArray) { _ in
+            let tweaks = tweakArray.flatMap { $0.tweaks }
+            mgr.enabledTweaks = tweaks.filter { $0.isOn }.count
+        }
+        .onAppear {
+            let tweaks = tweakArray.flatMap { $0.tweaks }
+            mgr.enabledTweaks = tweaks.filter { $0.isOn }.count
+        }
+        .sheet(isPresented: $showSettingsView) {
+            SettingsView()
+        }
+        .sheet(isPresented: $showCustomTweaksView) {
+            CustomTweaksView()
+        }
+        .sheet(isPresented: $showTweakInfoView) {
+            TweakInfoView(tweak: selectedTweak)
+        }
+    }
+    
+    // MARK: Applying Section
+    private var ApplyingSection: some View {
+        Section(header: HeaderLabel(text: "Logs", icon: "terminal")) {
+            VStack {
+                VStack(alignment: .leading) {
+                    HStack {
+                        HStack {
+                            Image(systemName: mgr.applyIcon)
+                            Text(mgr.applyShortStatus)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .fontWeight(.semibold)
+                        }
+                        Text("\(mgr.applyCurrentTweak)/\(mgr.enabledTweaks)")
+                    }
+                }
+                .tint(mgr.applyColor)
+                if showLogs {
+                    LogView()
+                        .modifier(TerminalPlatter())
+                } else {
+                    Text(mgr.applyStatus)
+                }
+            }
+            .modifier(SectionPlatter())
+        }
+        .listRowInsets(.dropdownRowInsets)
+    }
+    
+    // MARK: Debugging Section
+    private var DebuggingSection: some View {
+        Section(header: HeaderLabel(text: "Debugging", icon: "ant")) {
+            HStack {
+                TextField("Custom Path", text: $customZeroPath)
+                    .modifier(PrimaryTextFieldStyle())
+                Button(action: {
+                    do {
+                        try zeroPoC(path: customZeroPath)
+                    } catch {
+                        print("[!] failed to zero custom path at \(customZeroPath): \(error)")
+                    }
+                }) {
+                    Image(systemName: "checkmark")
+                        .frame(width: 24, height: 24)
+                }
+                .buttonStyle(TranslucentButtonStyle(color: .green, useFullWidth: false))
+                .disabled(customZeroPath.isEmpty)
+            }
+            Button(action: {
+                tweakArray = TweakArray.tweaks
+            }) {
+                HeaderLabel(text: "Obliterate AppStorage", icon: "flame")
+            }
+            .buttonStyle(TranslucentButtonStyle(color: .red))
+        }
+        .listRowInsets(.dropdownRowInsets)
+    }
+    
+    // MARK: Listed Tweaks Section
+    // i hate this whole section a lot, but breaking this up into three seperate arrays would suck for management. this is likely the best solution.
+    private var ListedTweaksSection: some View {
+        Group {
+            ForEach($tweakArray) { $section in
+                let sectionType: SectionType = section.name == "Custom Tweaks" ? .custom : section.name == "Risky Tweaks" ? .risky : .normal
+                
+                if sectionType == .risky && enableRiskyTweaks || sectionType != .risky && !section.tweaks.isEmpty {
+                    Section(header: HeaderDropdown(text: section.name, icon: section.icon, isExpanded: $section.isExpanded, useItemCount: true, itemCount: section.tweaks.count)) {
+                        if section.isExpanded {
+                            let sectionColor = sectionType == .custom ? .purple : sectionType == .risky ? .red : theme.accentColor
+                            
+                            withAnimation {
+                                ForEach($section.tweaks) { $tweak in
+                                    if version >= tweak.minSupportedVersion && version <= tweak.maxSupportedVersion || enableDebugSettings {
+                                        Button(action: {
+                                            tweak.isOn.toggle()
+                                        }) {
+                                            HStack(spacing: 10) {
+                                                Image(systemName: tweak.icon)
+                                                    .frame(width: 22, height: 20)
+                                                Text(tweak.name)
+                                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                                BindedCheckmark(isOn: $tweak.isOn)
+                                            }
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                        }
+                                        .buttonStyle(PlatterButtonStyle(color: sectionColor))
+                                        .listRowSeparator(.hidden)
+                                        .listRowInsets(.dropdownRowInsets)
+                                        .contextMenu {
+                                            Button(action: {
+                                                Alertinator.shared.alert(title: "\(tweak.name)", body: "\(tweak.paths)")
+                                            }) {
+                                                Label("Target Paths", systemImage: "folder")
+                                            }
+                                            .modifier(SolariumButtonTint())
+                                        }
+                                        .swipeActions {
+                                            Button(action: {
+                                                selectedTweak = tweak
+                                                showTweakInfoView.toggle()
+                                            }) {
+                                                Image(systemName: "info.circle")
+                                            }
+                                            if sectionType == .custom {
+                                                Button(action: {
+                                                    let customTweaksIndex = tweakArray.firstIndex(where: { $0.name == "Custom Tweaks" }) ?? 0
+                                                    
+                                                    tweakArray[customTweaksIndex].tweaks.removeAll { $0.name == tweak.name }
+                                                }) {
+                                                    Image(systemName: "trash")
+                                                }
+                                                .tint(.red)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: Applying Buttons
+    private var ApplyingButtons: some View {
+        VStack {
+            Button(action: {
+                mgr.applyTweaks(tweakData: tweakArray)
+            }) {
+                ButtonLabel(text: "Apply Tweaks", icon: "checkmark")
+            }
+            .buttonStyle(TranslucentButtonStyle(color: .green))
+            HStack {
+                Button(action: {
+                    mgr.revertTweaks()
+                }) {
+                    ButtonLabel(text: "Revert", icon: "xmark")
+                }
+                .buttonStyle(TranslucentButtonStyle(color: .red))
+                Button(action: {
+                    mgr.respringDevice()
+                }) {
+                    ButtonLabel(text: "Respring", icon: "goforward")
+                }
+                .buttonStyle(TranslucentButtonStyle(color: .orange))
+            }
+        }
+    }
+}
+
+#Preview {
+    ContentView()
+        .environmentObject(dirtyZeroManager())
+        .environmentObject(AppTheme())
+}
+
+/*
 struct ZeroTweak: Identifiable, Codable, Equatable {
     var id: String { name }
     var icon: String
@@ -74,7 +311,7 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section(header: HeaderLabel(text: "Version \(UIApplication.appVersion!) (\(weOnADebugBuild ? "Debug" : "Release"))", icon: "info.circle"), footer: Text("Made with love by the [jailbreak.party](https://jailbreak.party/) team.\n[Join the jailbreak.party Discord!](https://jailbreak.party/discord)").font(.footnote)) {
+                Section(header: Headername(text: "Version \(UIApplication.appVersion!) (\(weOnADebugBuild ? "Debug" : "Release"))", icon: "info.circle"), footer: Text("Made with love by the [jailbreak.party](https://jailbreak.party/) team.\n[Join the jailbreak.party Discord!](https://jailbreak.party/discord)").font(.footnote)) {
                     VStack {
                         VStack(alignment: .leading) {
                             HStack {
@@ -152,7 +389,7 @@ struct ContentView: View {
                 .listRowInsets(.dropdownRowInsets)
                 
                 if UIDevice.current.userInterfaceIdiom == .pad {
-                    Section(header: HeaderLabel(text: "Actions", icon: "hammer")) {
+                    Section(header: Headername(text: "Actions", icon: "hammer")) {
                         VStack {
                             Button(action: {
                                 Haptic.shared.play(.heavy)
@@ -162,17 +399,17 @@ struct ContentView: View {
                                     applyTweaks(tweaks: enabledTweaks)
                                 }
                             }) {
-                                ButtonLabel(text: "Apply Tweaks", icon: "checkmark")
+                                Buttonname(text: "Apply Tweaks", icon: "checkmark")
                             }
                             .buttonStyle(TranslucentButtonStyle(color: enabledTweaks.isEmpty ? .gray : .green))
                             HStack {
                                 Button(action: {
                                     Haptic.shared.play(.soft)
-                                    Alertinator.shared.alert(title: "Warning!", body: "To revert all tweaks currently applied, we'll have to reboot your device.", actionLabel: "Reboot", action: {
+                                    Alertinator.shared.alert(title: "Warning!", body: "To revert all tweaks currently applied, we'll have to reboot your device.", actionname: "Reboot", action: {
                                         try? zeroPoC(path: "/usr/lib/dyld")
                                     })
                                 }) {
-                                    ButtonLabel(text: "Remove", icon: "xmark")
+                                    Buttonname(text: "Remove", icon: "xmark")
                                 }
                                 .buttonStyle(TranslucentButtonStyle(color: .red))
                                 Button(action: {
@@ -185,7 +422,7 @@ struct ContentView: View {
                                         }
                                     }
                                 }) {
-                                    ButtonLabel(text: "Respring", icon: "goforward")
+                                    Buttonname(text: "Respring", icon: "goforward")
                                 }
                                 .buttonStyle(TranslucentButtonStyle(color: .orange))
                             }
@@ -212,7 +449,7 @@ struct ContentView: View {
                                     Button(action: {
                                         Haptic.shared.play(.heavy)
                                         try? zeroPoC(path: customZeroPath)
-                                        Alertinator.shared.alert(title: "Custom path zeroed successfully!", body: "Zeroed out \(customZeroPath).", actionLabel: "Respring", action: {
+                                        Alertinator.shared.alert(title: "Custom path zeroed successfully!", body: "Zeroed out \(customZeroPath).", actionname: "Respring", action: {
                                             if isDatAppInstalled(respringAppBID) {
                                                 LSApplicationWorkspace.default().openApplication(withBundleID: respringAppBID)
                                             } else {
@@ -230,7 +467,7 @@ struct ContentView: View {
                                     Haptic.shared.play(.soft)
                                     print("===== dirtyZero Debug =====\n[*] isSupported: \(isSupported)\n[*] weOnADebugBuild: \(weOnADebugBuild)\n[*] enabledTweakIds: \(enabledTweakIds)\n[*] customTweaks: \(customTweaks)")
                                 }) {
-                                    ButtonLabel(text: "Print Debug Info", icon: "ant")
+                                    Buttonname(text: "Print Debug Info", icon: "ant")
                                 }
                                 .buttonStyle(TranslucentButtonStyle())
                             }
@@ -257,17 +494,17 @@ struct ContentView: View {
                                 applyTweaks(tweaks: enabledTweaks)
                             }
                         }) {
-                            ButtonLabel(text: "Apply Tweaks", icon: "checkmark")
+                            Buttonname(text: "Apply Tweaks", icon: "checkmark")
                         }
                         .buttonStyle(TranslucentButtonStyle(color: enabledTweaks.isEmpty ? .gray : .green))
                         HStack {
                             Button(action: {
                                 Haptic.shared.play(.soft)
-                                Alertinator.shared.alert(title: "Warning!", body: "To revert all tweaks currently applied, we'll have to reboot your device.", actionLabel: "Reboot", action: {
+                                Alertinator.shared.alert(title: "Warning!", body: "To revert all tweaks currently applied, we'll have to reboot your device.", actionname: "Reboot", action: {
                                     try? zeroPoC(path: "/usr/lib/dyld")
                                 })
                             }) {
-                                ButtonLabel(text: "Remove", icon: "xmark")
+                                Buttonname(text: "Remove", icon: "xmark")
                             }
                             .buttonStyle(TranslucentButtonStyle(color: .red))
                             Button(action: {
@@ -285,7 +522,7 @@ struct ContentView: View {
                                     }
                                 }
                             }) {
-                                ButtonLabel(text: "Respring", icon: "goforward")
+                                Buttonname(text: "Respring", icon: "goforward")
                             }
                             .buttonStyle(TranslucentButtonStyle(color: .orange))
                         }
@@ -306,7 +543,7 @@ struct ContentView: View {
                     statusIcon = "exclamationmark.triangle.fill"
                     statusIconColor = .yellow
                     statusDescription = "This version of iOS does not support dirtyZero and never will. Sorry for any inconveniences."
-                    Alertinator.shared.alert(title: "Warning!", body: "This software version (\(device.systemName!) \(device.systemVersion!)) does not support dirtyZero and never will. Sorry for any inconveniences.", showCancel: false, actionLabel: "Exit App", action: {
+                    Alertinator.shared.alert(title: "Warning!", body: "This software version (\(device.systemName!) \(device.systemVersion!)) does not support dirtyZero and never will. Sorry for any inconveniences.", showCancel: false, actionname: "Exit App", action: {
                         exitinator()
                     })
                 } else {
@@ -426,28 +663,28 @@ struct ListedTweaksView: View {
     var body: some View {
         if UIDevice.current.userInterfaceIdiom == .pad {
             List {
-                TweakSectionList(sectionLabel: "Custom Tweaks", sectionIcon: "wrench.and.screwdriver", tweaks: customTweaks, isCustomTweak: true, enabledTweakIds: $enabledTweakIds)
-                TweakSectionList(sectionLabel: "Home Screen", sectionIcon: "house", tweaks: homeScreen, enabledTweakIds: $enabledTweakIds)
-                TweakSectionList(sectionLabel: "Lock Screen", sectionIcon: "lock", tweaks: lockScreen, enabledTweakIds: $enabledTweakIds)
-                TweakSectionList(sectionLabel: "Alerts & Overlays", sectionIcon: "exclamationmark.triangle", tweaks: alertsOverlays, enabledTweakIds: $enabledTweakIds)
-                TweakSectionList(sectionLabel: "Fonts & Icons", sectionIcon: "paintbrush", tweaks: fontsIcons, enabledTweakIds: $enabledTweakIds)
-                TweakSectionList(sectionLabel: "Control Center", sectionIcon: "square.grid.2x2", tweaks: controlCenter, enabledTweakIds: $enabledTweakIds)
-                TweakSectionList(sectionLabel: "Sound Effects", sectionIcon: "speaker.wave.2", tweaks: soundEffects, enabledTweakIds: $enabledTweakIds)
+                TweakSectionList(sectionname: "Custom Tweaks", sectionIcon: "wrench.and.screwdriver", tweaks: customTweaks, isCustomTweak: true, enabledTweakIds: $enabledTweakIds)
+                TweakSectionList(sectionname: "Home Screen", sectionIcon: "house", tweaks: homeScreen, enabledTweakIds: $enabledTweakIds)
+                TweakSectionList(sectionname: "Lock Screen", sectionIcon: "lock", tweaks: lockScreen, enabledTweakIds: $enabledTweakIds)
+                TweakSectionList(sectionname: "Alerts & Overlays", sectionIcon: "exclamationmark.triangle", tweaks: alertsOverlays, enabledTweakIds: $enabledTweakIds)
+                TweakSectionList(sectionname: "Fonts & Icons", sectionIcon: "paintbrush", tweaks: fontsIcons, enabledTweakIds: $enabledTweakIds)
+                TweakSectionList(sectionname: "Control Center", sectionIcon: "square.grid.2x2", tweaks: controlCenter, enabledTweakIds: $enabledTweakIds)
+                TweakSectionList(sectionname: "Sound Effects", sectionIcon: "speaker.wave.2", tweaks: soundEffects, enabledTweakIds: $enabledTweakIds)
                 if weOnADebugBuild || showRiskyTweaks {
-                    TweakSectionList(sectionLabel: "Risky Tweaks", sectionIcon: "exclamationmark.triangle", tweaks: riskyTweaks, isRiskyTweak: true, enabledTweakIds: $enabledTweakIds)
+                    TweakSectionList(sectionname: "Risky Tweaks", sectionIcon: "exclamationmark.triangle", tweaks: riskyTweaks, isRiskyTweak: true, enabledTweakIds: $enabledTweakIds)
                 }
             }
             .listStyle(.plain)
         } else {
-            TweakSectionList(sectionLabel: "Custom Tweaks", sectionIcon: "wrench.and.screwdriver", tweaks: customTweaks, isCustomTweak: true, enabledTweakIds: $enabledTweakIds)
-            TweakSectionList(sectionLabel: "Home Screen", sectionIcon: "house", tweaks: homeScreen, enabledTweakIds: $enabledTweakIds)
-            TweakSectionList(sectionLabel: "Lock Screen", sectionIcon: "lock", tweaks: lockScreen, enabledTweakIds: $enabledTweakIds)
-            TweakSectionList(sectionLabel: "Alerts & Overlays", sectionIcon: "exclamationmark.triangle", tweaks: alertsOverlays, enabledTweakIds: $enabledTweakIds)
-            TweakSectionList(sectionLabel: "Fonts & Icons", sectionIcon: "paintbrush", tweaks: fontsIcons, enabledTweakIds: $enabledTweakIds)
-            TweakSectionList(sectionLabel: "Control Center", sectionIcon: "square.grid.2x2", tweaks: controlCenter, enabledTweakIds: $enabledTweakIds)
-            TweakSectionList(sectionLabel: "Sound Effects", sectionIcon: "speaker.wave.2", tweaks: soundEffects, enabledTweakIds: $enabledTweakIds)
+            TweakSectionList(sectionname: "Custom Tweaks", sectionIcon: "wrench.and.screwdriver", tweaks: customTweaks, isCustomTweak: true, enabledTweakIds: $enabledTweakIds)
+            TweakSectionList(sectionname: "Home Screen", sectionIcon: "house", tweaks: homeScreen, enabledTweakIds: $enabledTweakIds)
+            TweakSectionList(sectionname: "Lock Screen", sectionIcon: "lock", tweaks: lockScreen, enabledTweakIds: $enabledTweakIds)
+            TweakSectionList(sectionname: "Alerts & Overlays", sectionIcon: "exclamationmark.triangle", tweaks: alertsOverlays, enabledTweakIds: $enabledTweakIds)
+            TweakSectionList(sectionname: "Fonts & Icons", sectionIcon: "paintbrush", tweaks: fontsIcons, enabledTweakIds: $enabledTweakIds)
+            TweakSectionList(sectionname: "Control Center", sectionIcon: "square.grid.2x2", tweaks: controlCenter, enabledTweakIds: $enabledTweakIds)
+            TweakSectionList(sectionname: "Sound Effects", sectionIcon: "speaker.wave.2", tweaks: soundEffects, enabledTweakIds: $enabledTweakIds)
             if weOnADebugBuild || showRiskyTweaks {
-                TweakSectionList(sectionLabel: "Risky Tweaks", sectionIcon: "exclamationmark.triangle", tweaks: riskyTweaks, isRiskyTweak: true, enabledTweakIds: $enabledTweakIds)
+                TweakSectionList(sectionname: "Risky Tweaks", sectionIcon: "exclamationmark.triangle", tweaks: riskyTweaks, isRiskyTweak: true, enabledTweakIds: $enabledTweakIds)
             }
         }
     }
@@ -456,3 +693,4 @@ struct ListedTweaksView: View {
 #Preview {
     ContentView()
 }
+*/

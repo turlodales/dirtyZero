@@ -14,6 +14,12 @@ var sema = DispatchSemaphore(value: 0)
 
 @main
 struct dirtyZeroApp: App {
+    /*
+    @StateObject private var mgr = dirtyZeroManager.shared
+    @StateObject private var theme = AppTheme.shared
+     */
+    @AppStorage("enableDebugSettings") var enableDebugSettings: Bool = false
+    
     init() {
         // Setup log stuff (redirect stdout)
         setvbuf(stdout, nil, _IONBF, 0)
@@ -22,6 +28,7 @@ struct dirtyZeroApp: App {
         // Give us a debug build bool
         #if DEBUG
         weOnADebugBuild = true
+        enableDebugSettings = true
         #else
         weOnADebugBuild = false
         #endif
@@ -30,9 +37,6 @@ struct dirtyZeroApp: App {
     var body: some Scene {
         WindowGroup {
             MainView()
-                .onAppear(perform: {
-                    if weOnADebugBuild { print("We're on a Debug build!") }
-                })
         }
     }
 }

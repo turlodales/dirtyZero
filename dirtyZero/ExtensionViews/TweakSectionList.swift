@@ -13,6 +13,7 @@ import PartyUI
 // primary spacing between list items: itemRowInsets, spaces between each dropdown/header and adds padding for left right (think of this as the container)
 // internal spacing: contentInsets
 
+/*
 struct TweakSectionList: View {
     var sectionLabel: String
     var sectionIcon: String
@@ -107,3 +108,4 @@ struct TweakSectionList: View {
         }
     }
 }
+*/
