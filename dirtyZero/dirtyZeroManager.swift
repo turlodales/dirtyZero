@@ -1,5 +1,5 @@
 //
-//  TweakHandler.swift
+//  dirtyZeroManager.swift
 //  dirtyZero
 //
 //  Created by lunginspector on 4/14/26.
@@ -7,7 +7,6 @@
 
 import SwiftUI
 import PartyUI
-import WebKit
 
 @MainActor
 final class dirtyZeroManager: ObservableObject {
@@ -18,7 +17,6 @@ final class dirtyZeroManager: ObservableObject {
     
     // status information
     @Published var applyShortStatus: String = "Ready to Apply!"
-    @Published var applyStatus: String = "All tweaks are ready to apply."
     @Published var applyIcon: String = "checkmark.circle.fill"
     @Published var applyColor: Color = Color(.label)
     
@@ -54,13 +52,14 @@ final class dirtyZeroManager: ObservableObject {
                 }
             }
             
-            Alertinator.shared.alert(title: "yayy", body: "it might've worked lol")
+            Alertinator.shared.alert(title: "All tweaks applied successfully!", body: "Respring your device to see changes take effect.", actionLabel: "Respring", action: {
+                self.respringDevice()
+            })
         } catch {
             print("[!] (\(applyCurrentTweak)/\(enabledTweaks)) failed to apply the tweak \(applyCurrentTweakName): \(error)")
             Alertinator.shared.alert(title: "(\(applyCurrentTweak)/\(enabledTweaks)) Failed to apply the tweak \(applyCurrentTweakName)!", body: "\(error)")
             
             applyShortStatus = "Failed to apply!"
-            applyStatus = "Failed to apply the tweak \(applyCurrentTweakName): \(error)"
             applyIcon = "xmark.circle.fill"
             applyColor = .red
         }

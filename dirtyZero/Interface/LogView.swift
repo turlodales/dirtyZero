@@ -1,3 +1,10 @@
+//
+//  LogView.swift
+//  dirtyZero
+//
+//  Created by lunginspector on 4/17/26.
+//
+
 import SwiftUI
 
 struct LogView: View {

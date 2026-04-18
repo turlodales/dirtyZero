@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PartyUI
+import DeviceKit
 
 var weOnADebugBuild: Bool = false
 var pipe = Pipe()
@@ -14,11 +15,11 @@ var sema = DispatchSemaphore(value: 0)
 
 @main
 struct dirtyZeroApp: App {
-    /*
     @StateObject private var mgr = dirtyZeroManager.shared
-    @StateObject private var theme = AppTheme.shared
-     */
+    
     @AppStorage("enableDebugSettings") var enableDebugSettings: Bool = false
+    
+    let device = Device.current
     
     init() {
         // Setup log stuff (redirect stdout)
@@ -36,16 +37,20 @@ struct dirtyZeroApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MainView()
+            ContentView()
+                .environmentObject(mgr)
+                .overlay {
+                    if mgr.showRespringView {
+                        RespringView()
+                            .brightness(-1.0)
+                            .ignoresSafeArea()
+                    }
+                }
+                .onAppear {
+                    print("\n[*] Welcome to dirtyZero! Running on \(device.systemName ?? "nil") \(device.systemVersion ?? "0.0"), \(device.description).")
+                    print("[*] All tweaks are done in memory, so if something goes wrong, simply reboot your device.")
+                }
         }
-    }
-}
-
-extension String: @retroactive Error {}
-
-extension UIApplication {
-    static var appVersion: String? {
-        return Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
     }
 }
 
@@ -53,6 +58,9 @@ extension UIApplication {
     return doubleSystemVersion() <= 18.3
 }
 
+extension String: @retroactive Error {}
+
+// allows us to put arrays into AppStorage
 extension Array: @retroactive RawRepresentable where Element: Codable {
     public init?(rawValue: String) {
         guard let data = rawValue.data(using: .utf8),

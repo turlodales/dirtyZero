@@ -1,5 +1,5 @@
 {
-  "originHash" : "dd2b5d1e417564a5a8e37410c933b4262dbb12d873c898154515c25ef7e3b2d4",
+  "originHash" : "de94392b9ed1bf4d914cfced48733d222393f0305b971a5f4db943df810912fb",
   "pins" : [
     {
       "identity" : "devicekit",
@@ -17,15 +17,6 @@
       "state" : {
         "revision" : "9ddda4cf23671ef0228e88681ec6210cb3e0d7f7",
         "version" : "1.0.0"
-      }
-    },
-    {
-      "identity" : "sfsymbolspickerforswiftui",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/alessiorubicini/SFSymbolsPickerForSwiftUI.git",
-      "state" : {
-        "revision" : "73c909b8a7fc77a30dd04208e33f759f8b52c4c8",
-        "version" : "1.0.6"
       }
     }
   ],
