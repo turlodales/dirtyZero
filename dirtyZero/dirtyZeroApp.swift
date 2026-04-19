@@ -47,8 +47,17 @@ struct dirtyZeroApp: App {
                     }
                 }
                 .onAppear {
-                    print("\n[*] Welcome to dirtyZero! Running on \(device.systemName ?? "nil") \(device.systemVersion ?? "0.0"), \(device.description).")
-                    print("[*] All tweaks are done in memory, so if something goes wrong, simply reboot your device.")
+                    if mgr.isDirtyZeroSupported {
+                        if mgr.chosenExploit == .l0ckwire {
+                            mgr.isDirtyZeroReady = true
+                        }
+                        init_offsets()
+                        offsets_init()
+                        print("\n[*] Welcome to dirtyZero! Running on \(device.systemName ?? "nil") \(device.systemVersion ?? "0.0"), \(device.description).")
+                        print("[*] All tweaks are done in memory, so if something goes wrong, simply reboot your device.")
+                    } else {
+                        Alertinator.shared.alert(title: "This device combination is not supported.", body: "This device combination is not supported and never will be. dirtyZero only supports iOS 16.0 - iOS 18.7.1, and iOS 26.0 - iOS 26.0.1.", showCancel: false, action: { exitinator() })
+                    }
                 }
         }
     }

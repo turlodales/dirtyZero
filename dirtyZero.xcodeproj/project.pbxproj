@@ -7,21 +7,65 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		157E1DFE2F2B138600E52180 /* PartyUI in Frameworks */ = {isa = PBXBuildFile; productRef = 157E1DFD2F2B138600E52180 /* PartyUI */; };
-		15CBF2B12F8F113300473207 /* PartyUI in Frameworks */ = {isa = PBXBuildFile; productRef = 15CBF2B02F8F113300473207 /* PartyUI */; };
+		1565910F2F9530BC00DEFE00 /* PartyUI in Frameworks */ = {isa = PBXBuildFile; productRef = 157E1DFD2F2B138600E52180 /* PartyUI */; };
+		156591102F9530BC00DEFE00 /* PartyUI in Frameworks */ = {isa = PBXBuildFile; productRef = 15CBF2B02F8F113300473207 /* PartyUI */; };
 		4305D0D62DCDDD7000399896 /* DeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4305D0D52DCDDD7000399896 /* DeviceKit */; };
 		435DD12F2DDD7DF00058DFCA /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 435DD12E2DDD7DF00058DFCA /* MobileCoreServices.framework */; };
 		43C255422F887AAE00BD7418 /* PartyUI in Frameworks */ = {isa = PBXBuildFile; productRef = 43C255412F887AAE00BD7418 /* PartyUI */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		156591E82F95318800DEFE00 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		1517DF302F93E84700C5E3A1 /* libgrabkernel2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgrabkernel2.dylib; path = ../../skidding/lara/lara/lib/libgrabkernel2.dylib; sourceTree = "<group>"; };
+		1517DF312F93E84700C5E3A1 /* libxpf.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxpf.dylib; path = ../../skidding/lara/lara/lib/libxpf.dylib; sourceTree = "<group>"; };
 		435DD12E2DDD7DF00058DFCA /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		4397F9512DCDDA0100090799 /* dirtyZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dirtyZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1517DF802F93E9C500C5E3A1 /* Exceptions for "dirtyZero" folder in "dirtyZero" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4397F9502DCDDA0100090799 /* dirtyZero */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		156591E92F95318800DEFE00 /* Exceptions for "dirtyZero" folder in "Embed Libraries" phase from "dirtyZero" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			attributesByRelativePath = {
+				lib/libgrabkernel2.dylib = (CodeSignOnCopy, );
+				lib/libxpf.dylib = (CodeSignOnCopy, );
+			};
+			buildPhase = 156591E82F95318800DEFE00 /* Embed Libraries */;
+			membershipExceptions = (
+				lib/libgrabkernel2.dylib,
+				lib/libxpf.dylib,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4397F9532DCDDA0100090799 /* dirtyZero */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1517DF802F93E9C500C5E3A1 /* Exceptions for "dirtyZero" folder in "dirtyZero" target */,
+				156591E92F95318800DEFE00 /* Exceptions for "dirtyZero" folder in "Embed Libraries" phase from "dirtyZero" target */,
+			);
 			path = dirtyZero;
 			sourceTree = "<group>";
 		};
@@ -32,9 +76,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				157E1DFE2F2B138600E52180 /* PartyUI in Frameworks */,
+				156591102F9530BC00DEFE00 /* PartyUI in Frameworks */,
+				1565910F2F9530BC00DEFE00 /* PartyUI in Frameworks */,
 				43C255422F887AAE00BD7418 /* PartyUI in Frameworks */,
-				15CBF2B12F8F113300473207 /* PartyUI in Frameworks */,
 				435DD12F2DDD7DF00058DFCA /* MobileCoreServices.framework in Frameworks */,
 				4305D0D62DCDDD7000399896 /* DeviceKit in Frameworks */,
 			);
@@ -46,6 +90,8 @@
 		435DD12D2DDD7DF00058DFCA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1517DF302F93E84700C5E3A1 /* libgrabkernel2.dylib */,
+				1517DF312F93E84700C5E3A1 /* libxpf.dylib */,
 				435DD12E2DDD7DF00058DFCA /* MobileCoreServices.framework */,
 			);
 			name = Frameworks;
@@ -78,6 +124,7 @@
 				4397F94D2DCDDA0100090799 /* Sources */,
 				4397F94E2DCDDA0100090799 /* Frameworks */,
 				4397F94F2DCDDA0100090799 /* Resources */,
+				156591E82F95318800DEFE00 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
@@ -283,13 +330,20 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "Beta 1";
+				CURRENT_PROJECT_VERSION = "Beta 2";
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = TA2N4LNLT8;
+				DEVELOPMENT_TEAM = HTH7RGGR9D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/dirtyZero/System",
+					"$(inherited)",
+					"$(SRCROOT)/dirtyZero/System/kexploit",
+				);
+				INFOPLIST_FILE = dirtyZero/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = dirtyZero;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -299,6 +353,10 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/dirtyZero/lib",
 				);
 				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jbdotparty.dirtyZero;
@@ -318,13 +376,20 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "Beta 1";
+				CURRENT_PROJECT_VERSION = "Beta 2";
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = TA2N4LNLT8;
+				DEVELOPMENT_TEAM = HTH7RGGR9D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/dirtyZero/System",
+					"$(inherited)",
+					"$(SRCROOT)/dirtyZero/System/kexploit",
+				);
+				INFOPLIST_FILE = dirtyZero/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = dirtyZero;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -334,6 +399,10 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/dirtyZero/lib",
 				);
 				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jbdotparty.dirtyZero;

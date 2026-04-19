@@ -31,6 +31,12 @@ struct ContentView: View {
     
     let version = doubleSystemVersion()
     
+    // DarkSword Bullshit
+    @State private var isOffsetsAvailable = haskernproc()
+    
+    @State private var showresetalert: Bool = false
+    @State private var downloadingkernelcache = false
+    
     var body: some View {
         Group {
             if UIDevice.current.userInterfaceIdiom == .phone {
@@ -38,17 +44,22 @@ struct ContentView: View {
                     List {
                         ApplyingSection
                             .listRowSeparator(.hidden)
+                        if mgr.chosenExploit == .DarkSword {
+                            DarkSwordSection
+                        }
                         if enableDebugSettings {
                             DebuggingSection
                                 .listRowSeparator(.hidden)
                         }
                         ListedTweaksSection
+                            .disabled(!mgr.vfsready && mgr.chosenExploit != .l0ckwire)
                             .listRowSeparator(.hidden)
                     }
                     .listStyle(.plain)
                     .navigationTitle("dirtyZero")
                     .safeAreaInset(edge: .bottom) {
                         ApplyingButtons
+                            .disabled(!mgr.vfsready && mgr.chosenExploit != .l0ckwire)
                             .modifier(OverlayBackground())
                     }
                     .toolbar {
@@ -120,6 +131,101 @@ struct ContentView: View {
         }
         .sheet(item: $selectedTweak) { tweak in
             TweakInfoView(tweak: tweak)
+        }
+    }
+    
+    // MARK: DarkSword Exploit Testing
+    private var DarkSwordSection: some View {
+        Section(header: HeaderLabel(text: "DarkSword", icon: "wrench.and.screwdriver")) {
+            if !isOffsetsAvailable {
+                Text("No offsets detected! Please go download the kernelcache in settings.")
+            } else {
+                // MARK: Run Exploit
+                Button {
+                    offsets_init()
+                    mgr.run()
+                } label: {
+                    if mgr.dsrunning {
+                        HStack {
+                            ProgressView(value: mgr.dsprogress)
+                                .progressViewStyle(.circular)
+                                .frame(width: 18, height: 18)
+                            Text("Running...")
+                            Spacer()
+                            Text("\(Int(mgr.dsprogress * 100))%")
+                        }
+                    } else {
+                        if mgr.dsready {
+                            HStack {
+                                Text("Ran Exploit")
+                                Spacer()
+                                Image(systemName: "checkmark.circle")
+                                    .foregroundColor(.green)
+                            }
+                        } else if mgr.dsattempted && mgr.dsfailed {
+                            HStack {
+                                Text("Exploit Failed")
+                                Spacer()
+                                Image(systemName: "xmark.circle")
+                                    .foregroundColor(.red)
+                            }
+                        } else {
+                            Text("Run Exploit")
+                        }
+                    }
+                }
+                .disabled(mgr.dsrunning)
+                .disabled(mgr.dsready)
+                
+                if enableDebugSettings {
+                    LabeledContent("kernproc") {
+                        Text(String(format: "0x%llx", getrootvnode()))
+                            .font(.system(.body, design: .monospaced))
+                    }
+                    LabeledContent("rootvnode") {
+                        Text(String(format: "0x%llx", getkernproc()))
+                            .font(.system(.body, design: .monospaced))
+                    }
+                    if mgr.dsready {
+                        LabeledContent("kernel_base") {
+                            Text(String(format: "0x%llx", mgr.kernbase))
+                                .font(.system(.body, design: .monospaced))
+                        }
+                        LabeledContent("kernel_slide") {
+                            Text(String(format: "0x%llx", mgr.kernslide))
+                                .font(.system(.body, design: .monospaced))
+                        }
+                    }
+                }
+                // MARK: Init VFS
+                Button(action: { mgr.vfsinit() }) {
+                    if mgr.vfsrunning {
+                        LabeledContent("Initialising VFS...") {
+                            ProgressView(value: mgr.vfsprogress)
+                                .progressViewStyle(.circular)
+                                .frame(width: 18, height: 18)
+                            Text("\(Int(mgr.vfsprogress * 100))%")
+                        }
+                    } else if !mgr.vfsready {
+                        if mgr.vfsattempted && mgr.vfsfailed {
+                            LabeledContent("VFS Init Failed") {
+                                Image(systemName: "xmark.circle")
+                                    .foregroundColor(.red)
+                            }
+                        } else {
+                            Text("Initialise VFS")
+                        }
+                    } else {
+                        HStack {
+                            Text("Initialised VFS")
+                            Spacer()
+                            Image(systemName: "checkmark.circle")
+                                .foregroundColor(.green)
+                        }
+                    }
+                }
+                .disabled(!mgr.dsready || mgr.vfsready || mgr.vfsrunning)
+            }
         }
     }
     

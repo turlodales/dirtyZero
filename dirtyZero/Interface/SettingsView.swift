@@ -10,6 +10,8 @@ import PartyUI
 import DeviceKit
 
 struct SettingsView: View {
+    @EnvironmentObject var mgr: dirtyZeroManager
+    
     @Environment(\.dismiss) var dismiss
     @Environment(\.openURL) var openURL
     
@@ -20,6 +22,9 @@ struct SettingsView: View {
     
     @AppStorage("enableDebugSettings") var enableDebugSettings: Bool = false
     @AppStorage("enableRiskyTweaks") var enableRiskyTweaks: Bool = false
+    
+    @State private var isOffsetsAvailable = haskernproc()
+    @State private var isDownloadingKcache = false
     
     var body: some View {
         NavigationStack {
@@ -57,6 +62,44 @@ struct SettingsView: View {
                             LinkCreditCell(image: Image("neonmodder123"), name: "neonmodder123", description: "Developed WebView respring method.", url: "https://github.com/neonmodder123")
                         }
                         .navigationTitle("Credits")
+                    }
+                }
+                Section(header: HeaderLabel(text: "Exploits", icon: "ant")) {
+                    if mgr.doesDeviceSupportl0ckwire {
+                        Picker("", selection: $mgr.chosenExploit) {
+                            ForEach(ExploitOptions.allCases, id: \.self) { option in
+                                if option.rawValue != "none" {
+                                    Text(option.rawValue).tag(option)
+                                }
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .listRowSeparator(.hidden)
+                    }
+                    if mgr.chosenExploit == .DarkSword {
+                        if !isOffsetsAvailable {
+                            Button(action: {
+                                guard !isDownloadingKcache else { return }
+                                isDownloadingKcache = true
+                                DispatchQueue.global(qos: .userInitiated).async {
+                                    let ok = dlkerncache()
+                                    DispatchQueue.main.async {
+                                        isOffsetsAvailable = ok
+                                        isDownloadingKcache = false
+                                    }
+                                }
+                            }) {
+                                Text("Download Kernelcache")
+                            }
+                            .disabled(isDownloadingKcache)
+                        }
+                        Button(role: .destructive, action: {
+                            clearkerncachedata()
+                            isOffsetsAvailable = haskernproc()
+                        }) {
+                            Text("Delete Kernelcache Data")
+                        }
+                        
                     }
                 }
                 Section(header: HeaderLabel(text: "Applying", icon: "checkmark.seal")) {
