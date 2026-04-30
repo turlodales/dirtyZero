@@ -67,13 +67,11 @@ struct ContentView: View {
                             Button(action: { showSettingsView.toggle() }) {
                                 Image(systemName: "gear")
                             }
-                            .modifier(SolariumButtonTint())
                         }
                         ToolbarItem(placement: .topBarTrailing) {
                             Button(action: { showCustomTweaksView.toggle() }) {
                                 Image(systemName: "paintbrush")
                             }
-                            .modifier(SolariumButtonTint())
                         }
                     }
                 }
@@ -97,13 +95,11 @@ struct ContentView: View {
                             Button(action: { showSettingsView.toggle() }) {
                                 Image(systemName: "gear")
                             }
-                            .modifier(SolariumButtonTint())
                         }
                         ToolbarItem(placement: .topBarTrailing) {
                             Button(action: { showCustomTweaksView.toggle() }) {
                                 Image(systemName: "paintbrush")
                             }
-                            .modifier(SolariumButtonTint())
                         }
                     }
                 }) {
@@ -305,7 +301,7 @@ struct ContentView: View {
                                                     .frame(width: 22, height: 20)
                                                 Text(tweak.name)
                                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                                BindedCheckmark(isOn: $tweak.isOn)
+                                                Image(systemName: $tweak.isOn ? "checkmark.circle.fill" : "circle")
                                             }
                                             .frame(maxWidth: .infinity, alignment: .leading)
                                         }

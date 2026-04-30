@@ -33,10 +33,6 @@ struct LogView: View {
                             }
                         }
                     }
-                    // Redirect
-                    // print("Redirecting stdout")
-                    setvbuf(stdout, nil, _IONBF, 0)
-                    dup2(pipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
                 }
                 .contextMenu {
                     Button {

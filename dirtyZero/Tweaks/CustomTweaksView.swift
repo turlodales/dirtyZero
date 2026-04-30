@@ -110,7 +110,6 @@ struct CustomTweaksView: View {
                     }) {
                         Image(systemName: "xmark")
                     }
-                    .modifier(SolariumButtonTint())
                 }
             }
             .tint(.purple)

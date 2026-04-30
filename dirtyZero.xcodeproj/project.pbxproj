@@ -12,6 +12,7 @@
 		4305D0D62DCDDD7000399896 /* DeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4305D0D52DCDDD7000399896 /* DeviceKit */; };
 		435DD12F2DDD7DF00058DFCA /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 435DD12E2DDD7DF00058DFCA /* MobileCoreServices.framework */; };
 		43C255422F887AAE00BD7418 /* PartyUI in Frameworks */ = {isa = PBXBuildFile; productRef = 43C255412F887AAE00BD7418 /* PartyUI */; };
+		43EB24EB2F95B94B00EAEADB /* PartyUI in Frameworks */ = {isa = PBXBuildFile; productRef = 43EB24EA2F95B94B00EAEADB /* PartyUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,8 +29,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1517DF302F93E84700C5E3A1 /* libgrabkernel2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgrabkernel2.dylib; path = ../../skidding/lara/lara/lib/libgrabkernel2.dylib; sourceTree = "<group>"; };
-		1517DF312F93E84700C5E3A1 /* libxpf.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxpf.dylib; path = ../../skidding/lara/lara/lib/libxpf.dylib; sourceTree = "<group>"; };
 		435DD12E2DDD7DF00058DFCA /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		4397F9512DCDDA0100090799 /* dirtyZero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dirtyZero.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -79,6 +78,7 @@
 				156591102F9530BC00DEFE00 /* PartyUI in Frameworks */,
 				1565910F2F9530BC00DEFE00 /* PartyUI in Frameworks */,
 				43C255422F887AAE00BD7418 /* PartyUI in Frameworks */,
+				43EB24EB2F95B94B00EAEADB /* PartyUI in Frameworks */,
 				435DD12F2DDD7DF00058DFCA /* MobileCoreServices.framework in Frameworks */,
 				4305D0D62DCDDD7000399896 /* DeviceKit in Frameworks */,
 			);
@@ -90,8 +90,6 @@
 		435DD12D2DDD7DF00058DFCA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1517DF302F93E84700C5E3A1 /* libgrabkernel2.dylib */,
-				1517DF312F93E84700C5E3A1 /* libxpf.dylib */,
 				435DD12E2DDD7DF00058DFCA /* MobileCoreServices.framework */,
 			);
 			name = Frameworks;
@@ -139,6 +137,7 @@
 				157E1DFD2F2B138600E52180 /* PartyUI */,
 				43C255412F887AAE00BD7418 /* PartyUI */,
 				15CBF2B02F8F113300473207 /* PartyUI */,
+				43EB24EA2F95B94B00EAEADB /* PartyUI */,
 			);
 			productName = dirtyZero;
 			productReference = 4397F9512DCDDA0100090799 /* dirtyZero.app */;
@@ -171,7 +170,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				4305D0D42DCDDD7000399896 /* XCRemoteSwiftPackageReference "DeviceKit" */,
-				15CBF2AF2F8F113300473207 /* XCLocalSwiftPackageReference "../../Packages/PartyUI" */,
+				43EB24E92F95B94B00EAEADB /* XCRemoteSwiftPackageReference "PartyUI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4397F9522DCDDA0100090799 /* Products */;
@@ -332,7 +331,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "Beta 2";
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = HTH7RGGR9D;
+				DEVELOPMENT_TEAM = TA2N4LNLT8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -378,7 +377,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "Beta 2";
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = HTH7RGGR9D;
+				DEVELOPMENT_TEAM = TA2N4LNLT8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -437,13 +436,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		15CBF2AF2F8F113300473207 /* XCLocalSwiftPackageReference "../../Packages/PartyUI" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../Packages/PartyUI;
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
 		4305D0D42DCDDD7000399896 /* XCRemoteSwiftPackageReference "DeviceKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -451,6 +443,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.6.0;
+			};
+		};
+		43EB24E92F95B94B00EAEADB /* XCRemoteSwiftPackageReference "PartyUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jailbreakdotparty/PartyUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -471,6 +471,11 @@
 		};
 		43C255412F887AAE00BD7418 /* PartyUI */ = {
 			isa = XCSwiftPackageProductDependency;
+			productName = PartyUI;
+		};
+		43EB24EA2F95B94B00EAEADB /* PartyUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 43EB24E92F95B94B00EAEADB /* XCRemoteSwiftPackageReference "PartyUI" */;
 			productName = PartyUI;
 		};
 /* End XCSwiftPackageProductDependency section */

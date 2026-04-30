@@ -91,7 +91,6 @@ struct TweakInfoView: View {
                 }) {
                     Image(systemName: "xmark")
                 }
-                .modifier(SolariumButtonTint())
             }
         }
     }

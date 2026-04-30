@@ -1,5 +1,5 @@
 {
-  "originHash" : "de94392b9ed1bf4d914cfced48733d222393f0305b971a5f4db943df810912fb",
+  "originHash" : "e5f120e55d15949a42f700c3379393c52302803bcdaf2ea9ed657179a0276b17",
   "pins" : [
     {
       "identity" : "devicekit",
@@ -11,12 +11,12 @@
       }
     },
     {
-      "identity" : "fluidgradient",
+      "identity" : "partyui",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Cindori/FluidGradient.git",
+      "location" : "https://github.com/jailbreakdotparty/PartyUI",
       "state" : {
-        "revision" : "9ddda4cf23671ef0228e88681ec6210cb3e0d7f7",
-        "version" : "1.0.0"
+        "revision" : "28dbba40758752297c9052901684c99d0a6cd17a",
+        "version" : "0.4.0"
       }
     }
   ],

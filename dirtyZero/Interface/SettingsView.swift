@@ -57,8 +57,16 @@ struct SettingsView: View {
                     NavigationLink("Credits") {
                         List {
                             LinkCreditCell(image: Image("skadz108"), name: "Skadz", description: "Initial developer, backend, and exploit-related management.", url: "https://github.com/skadz108")
-                            LinkCreditCell(image: Image("lunginspector"), name: "lunginspector", description: "Frontend developer, tweak creator, and app UI.", url: "https://github.com/skadz108")
+                            LinkCreditCell(image: Image("lunginspector"), name: "lunginspector", description: "Frontend developer, tweak creator, and app UI.", url: "https://github.com/lunginspector")
                             LinkCreditCell(image: Image("ianbeer"), name: "Ian Beer (Gooogle Project Zero)", description: "Discovering & publishing CVE-2025-24203.", url: "https://project-zero.issues.chromium.org/issues/391518636")
+                            LinkCreditCell(image: Image("DuyTran"), name: "Duy Tran", description: "App detection exploit, and various contributions to other utilized libraries", url: "https://github.com/khanhduytran0")
+                            if mgr.chosenExploit == .DarkSword {
+                                LinkCreditCell(image: Image("rooootdev"), name: "rooootdev", description: "DarkSword exploit library and implementation assistance", url: "https://github.com/rooootdev")
+                                LinkCreditCell(image: Image("appinstallerios"), name: "AppInstalleriOS", description: "Patchfinder assistance and numerous contributions", url: "https://github.com/AppInstalleriOSGH")
+                                LinkCreditCell(image: Image("wh1te4ever"), name: "wh1te4ever", description: "Various additions and research to DarkSword exploit", url: "https://github.com/wh1te4ever")
+                                LinkCreditCell(image: Image("opa334"), name: "opa334", description: "Original DarkSword kernel exploit implementation, and various required libraries", url: "https://github.com/opa334")
+                                LinkCreditCell(image: Image("alfiecg"), name: "Alfie CG", description: "Developed kernelcache downloading library", url: "https://github.com/alfiecg24")
+                            }
                             LinkCreditCell(image: Image("neonmodder123"), name: "neonmodder123", description: "Developed WebView respring method.", url: "https://github.com/neonmodder123")
                         }
                         .navigationTitle("Credits")
