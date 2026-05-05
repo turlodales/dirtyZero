@@ -23,7 +23,6 @@ struct SettingsView: View {
     @AppStorage("enableDebugSettings") var enableDebugSettings: Bool = false
     @AppStorage("enableRiskyTweaks") var enableRiskyTweaks: Bool = false
     
-    @State private var isOffsetsAvailable = haskernproc()
     @State private var isDownloadingKcache = false
     
     var body: some View {
@@ -73,7 +72,7 @@ struct SettingsView: View {
                     }
                 }
                 Section(header: HeaderLabel(text: "Exploits", icon: "ant")) {
-                    if mgr.doesDeviceSupportl0ckwire {
+                    if mgr.supportsl0ckwire {
                         Picker("", selection: $mgr.chosenExploit) {
                             ForEach(ExploitOptions.allCases, id: \.self) { option in
                                 if option.rawValue != "none" {
@@ -85,14 +84,14 @@ struct SettingsView: View {
                         .listRowSeparator(.hidden)
                     }
                     if mgr.chosenExploit == .DarkSword {
-                        if !isOffsetsAvailable {
+                        if !mgr.hasOffsets {
                             Button(action: {
                                 guard !isDownloadingKcache else { return }
                                 isDownloadingKcache = true
                                 DispatchQueue.global(qos: .userInitiated).async {
                                     let ok = dlkerncache()
                                     DispatchQueue.main.async {
-                                        isOffsetsAvailable = ok
+                                        mgr.hasOffsets = ok
                                         isDownloadingKcache = false
                                     }
                                 }
@@ -103,7 +102,7 @@ struct SettingsView: View {
                         }
                         Button(role: .destructive, action: {
                             clearkerncachedata()
-                            isOffsetsAvailable = haskernproc()
+                            mgr.hasOffsets = haskernproc()
                         }) {
                             Text("Delete Kernelcache Data")
                         }

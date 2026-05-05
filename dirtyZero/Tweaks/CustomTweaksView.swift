@@ -36,16 +36,16 @@ struct CustomTweaksView: View {
                         }
                         .buttonStyle(TranslucentButtonStyle(color: .purple))
                     }
-                    .listRowInsets(.dropdownRowInsets)
+                    .listRowInsets(.sectionInsets)
                     .listRowSeparator(.hidden)
                 }
                 Section(header: HeaderLabel(text: "Create Tweak", icon: "paintbrush")) {
                     VStack {
                         TextField("Tweak Name", text: $tweakName)
-                            .modifier(PrimaryTextFieldStyle())
+                            .modifier(TextFieldBackground())
                         HStack {
                             TextField("/path/to/zero", text: $path2Add)
-                                .modifier(PrimaryTextFieldStyle())
+                                .modifier(TextFieldBackground())
                             Button(action: {
                                 if targetPaths.contains(path2Add) {
                                     Haptic.shared.play(.heavy)
@@ -63,7 +63,7 @@ struct CustomTweaksView: View {
                         }
                     }
                 }
-                .listRowInsets(.dropdownRowInsets)
+                .listRowInsets(.sectionInsets)
                 .listRowSeparator(.hidden)
                 
                 if !targetPaths.isEmpty {
@@ -73,7 +73,7 @@ struct CustomTweaksView: View {
                                 .font(.system(.footnote, design: .monospaced))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding()
-                                .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: DesignStyle.defaultComponentRadius))
+                                .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: cornerRad.component))
                                 .swipeActions {
                                     Button(role: .destructive, action: {
                                         targetPaths.removeAll { $0 == path }
@@ -84,7 +84,7 @@ struct CustomTweaksView: View {
                                 }
                         }
                     }
-                    .listRowInsets(.dropdownRowInsets)
+                    .listRowInsets(.sectionInsets)
                     .listRowSeparator(.hidden)
                 }
             }

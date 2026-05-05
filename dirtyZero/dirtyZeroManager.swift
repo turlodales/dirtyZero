@@ -34,6 +34,9 @@ final class dirtyZeroManager: ObservableObject {
     @AppStorage("useRespringApp") var useRespringApp: Bool = false
     @AppStorage("respringAppBID") var respringAppBID: String = "com.jbdotparty.respringr"
     
+    // exploit-related properties
+    @Published var chosenExploit: ExploitOptions = defaultExploit()
+    @Published var isDirtyZeroReady: Bool = false
     @Published var isDirtyZeroSupported: Bool = {
         let vrs = ProcessInfo.processInfo.operatingSystemVersion
         
@@ -53,20 +56,7 @@ final class dirtyZeroManager: ObservableObject {
             return false
         }
     }()
-    @Published var chosenExploit: ExploitOptions = {
-        let version = doubleSystemVersion()
-        if version <= 18.3 {
-            return .l0ckwire
-        } else if version >= 18.4 && version <= 18.7  {
-            return .DarkSword
-        } else if version >= 19.0 && version < 26.1 {
-            return .DarkSword
-        } else {
-            return .none
-        }
-    }()
-    @Published var isDirtyZeroReady: Bool = false
-    @Published var doesDeviceSupportl0ckwire: Bool = {
+    @Published var supportsl0ckwire: Bool = {
         let version = doubleSystemVersion()
         if version <= 18.3 {
             return true
@@ -75,8 +65,9 @@ final class dirtyZeroManager: ObservableObject {
         }
     }()
     
-    // MARK: bullshit incoming
-    // will need these
+    // darksword
+    @Published var hasOffsets: Bool = false
+    
     @Published var dsrunning: Bool = false
     @Published var dsready: Bool = false
     @Published var dsattempted: Bool = false
@@ -95,8 +86,7 @@ final class dirtyZeroManager: ObservableObject {
     
     init() {}
     
-    // MARK: DarkSword bullshit
-    
+    // MARK: DarkSword Exploit Handlers
     func run(completion: ((Bool) -> Void)? = nil) {
         guard !dsrunning else { return }
         dsrunning = true
@@ -132,10 +122,10 @@ final class dirtyZeroManager: ObservableObject {
                     self.kernslide = ds_get_kernel_slide()
                     print(String(format: "kernel_base:  0x%llx", self.kernbase))
                     print(String(format: "kernel_slide: 0x%llx\n", self.kernslide))
-                    print("exploit success!")
+                    print("[*] exploit success!")
                 } else {
                     self.dsfailed = true
-                    print("exploit failed.")
+                    print("[!] exploit failed.")
                 }
                 self.dsprogress = 1.0
                 completion?(success)
@@ -143,6 +133,7 @@ final class dirtyZeroManager: ObservableObject {
         }
     }
     
+    // VFS
     func vfsinit(completion: ((Bool) -> Void)? = nil) {
         vfs_setlogcallback(dirtyZeroManager.vfslogcallback)
         vfs_setprogresscallback { progress in
@@ -162,11 +153,14 @@ final class dirtyZeroManager: ObservableObject {
                 self.vfsready = (r == 0 && vfs_isready())
                 if self.vfsready {
                     self.vfsfailed = false
-                    print("\nvfs ready!\n")
+                    print("[*] vfs ready!")
                     self.isDirtyZeroReady = true
+                    self.applyShortStatus = "Ready to Apply!"
+                    self.applyIcon = "checkmark.circle.fill"
+                    self.applyColor = Color(.label)
                 } else {
                     self.vfsfailed = true
-                    print("\nvfs init failed.\n")
+                    print("[!] vfs init failed.")
                 }
                 self.vfsrunning = false
                 self.vfsprogress = 1.0
@@ -175,58 +169,6 @@ final class dirtyZeroManager: ObservableObject {
         }
     }
     
-    private static let vfslogcallback: @convention(c) (UnsafePointer<CChar>?) -> Void = { msg in
-        guard let msg = msg else { return }
-        let s = String(cString: msg)
-        DispatchQueue.main.async {
-            dirtyZeroManager.shared.vfsinitlog += "(vfs) " + s + "\n"
-            print("(vfs) " + s)
-        }
-    }
-    /*
-    func vfswrite(path: String, data: Data) -> Bool {
-        guard vfsready else { return false }
-        return data.withUnsafeBytes { ptr in
-            let n = vfs_write(path, ptr.baseAddress, data.count, 0)
-            return n > 0
-        }
-    }
-    
-    func vfsoverwritewithdata(target: String, data: Data) -> Bool {
-        guard vfsready else { return false }
-        let tmp = NSTemporaryDirectory() + "vfs_src_\(arc4random()).bin"
-        do { try data.write(to: URL(fileURLWithPath: tmp)) } catch { return false }
-        let ok = vfsoverwritefromlocalpath(target: target, source: tmp)
-        try? FileManager.default.removeItem(atPath: tmp)
-        return ok
-    }
-    
-    func vfsoverwritefromlocalpath(target: String, source: String) -> Bool {
-        print("(vfs) target \(source) -> \(target)")
-        
-        guard vfsready else {
-            print("(vfs) not ready")
-            return false
-        }
-        
-        guard FileManager.default.fileExists(atPath: source) else {
-            print("(vfs) source file not found: \(source)")
-            return false
-        }
-        
-        let r = vfs_overwritefile(target, source)
-        
-        print("(vfs) vfs_overwritefile returned: \(r)")
-        
-        if r == 0 {
-            print("(vfs) file overwritten")
-        } else {
-            print("(vfs) failed to overwrite file")
-        }
-        
-        return r == 0
-    }
-    */
     func vfszeropage(at path: String) -> Bool {
         let result = path.withCString { cpath in
             vfs_zeropage(cpath, 0)
@@ -241,24 +183,50 @@ final class dirtyZeroManager: ObservableObject {
         return true
     }
     
-    /*
-    @discardableResult
-    func lara_overwritefile(target: String, data: Data) -> (ok: Bool, message: String) {
-        let result = sbxready ? sbxoverwrite(path: target, data: data) : (false, "sbx not ready")
-        if result.0 {
-            return result
+    private static let vfslogcallback: @convention(c) (UnsafePointer<CChar>?) -> Void = { msg in
+        guard let msg = msg else { return }
+        let s = String(cString: msg)
+        DispatchQueue.main.async {
+            print("(vfs) " + s)
         }
-        
-        guard vfsready else {
-            return (false, result.1 + ", vfs not ready")
-        }
-        
-        let ok = vfsoverwritewithdata(target: target, data: data)
-        return ok ? (true, "vfs overwrite ok") : (false, result.1 + ", vfs overwrite failed")
     }
-    */
     
-    // apply tweaks function (using DirtyZero)
+    // MARK: App Backend
+    @MainActor func applyTweaks(tweakData: [ZeroSection]) {
+        var failedTweaks: [String] = []
+        let tweaks = tweakData.flatMap { $0.tweaks }.filter { $0.isOn }
+        applyCurrentTweak = 0
+        
+        for tweak in tweaks {
+            applyCurrentTweak += 1
+            applyCurrentTweakName = tweak.name
+            print("[*] (\(applyCurrentTweak)/\(enabledTweaks)) zeroing paths for the tweak \(tweak.name): \(tweak.paths)")
+            
+            for path in tweak.paths {
+                if chosenExploit == .l0ckwire {
+                    do {
+                        try zeroPoC(path: path)
+                    } catch {
+                        print("[!] failed to apply tweak \(tweak.name): \(error)")
+                        failedTweaks.append(tweak.name)
+                    }
+                } else {
+                    vfszeropage(at: path)
+                }
+            }
+        }
+        
+        if failedTweaks.isEmpty {
+            Alertinator.shared.alert(title: "All tweaks applied successfully!", body: "Respring your device to see changes take effect.", actionLabel: "Respring", action: {
+                self.respringDevice()
+            })
+        } else {
+            Alertinator.shared.alert(title: "Attempted to apply tweaks.", body: "The following tweaks failed to apply: \(failedTweaks)", actionLabel: "Respring", action: {
+                self.respringDevice()
+            })
+        }
+    }
+    /*
     @MainActor func applyTweaks(tweakData: [ZeroSection]) {
         applyCurrentTweak = 0
         
@@ -294,11 +262,15 @@ final class dirtyZeroManager: ObservableObject {
             applyColor = .red
         }
     }
-    
+    */
     @MainActor func revertTweaks() {
         Alertinator.shared.alert(title: "Are you sure you'd like to revert your tweaks?", body: "Your device will reboot to revert all of your tweaks", action: {
             do {
-                try zeroPoC(path: "/usr/lib/dyld")
+                if self.chosenExploit == .DarkSword {
+                    
+                } else {
+                    try zeroPoC(path: "/usr/lib/dyld")
+                }
             } catch {
                 print("[!] failed to reboot device: \(error)")
                 Alertinator.shared.alert(title: "Failed to reboot device!", body: "\(error)")

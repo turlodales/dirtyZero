@@ -31,9 +31,6 @@ struct ContentView: View {
     
     let version = doubleSystemVersion()
     
-    // DarkSword Bullshit
-    @State private var isOffsetsAvailable = haskernproc()
-    
     @State private var showresetalert: Bool = false
     @State private var downloadingkernelcache = false
     
@@ -42,24 +39,22 @@ struct ContentView: View {
             if UIDevice.current.userInterfaceIdiom == .phone {
                 NavigationStack {
                     List {
+                        AlertsSection
+                            .listRowSeparator(.hidden)
                         ApplyingSection
                             .listRowSeparator(.hidden)
-                        if mgr.chosenExploit == .DarkSword {
-                            DarkSwordSection
-                        }
                         if enableDebugSettings {
                             DebuggingSection
                                 .listRowSeparator(.hidden)
                         }
                         ListedTweaksSection
-                            .disabled(!mgr.vfsready && mgr.chosenExploit != .l0ckwire)
+                            .disabled(mgr.chosenExploit == .DarkSword && !mgr.vfsready)
                             .listRowSeparator(.hidden)
                     }
                     .listStyle(.plain)
                     .navigationTitle("dirtyZero")
                     .safeAreaInset(edge: .bottom) {
                         ApplyingButtons
-                            .disabled(!mgr.vfsready && mgr.chosenExploit != .l0ckwire)
                             .modifier(OverlayBackground())
                     }
                     .toolbar {
@@ -80,6 +75,7 @@ struct ContentView: View {
                     List {
                         ApplyingSection
                             .listRowSeparator(.hidden)
+                            .listRowInsets(.sectionInsets)
                         ApplyingButtons
                         if enableDebugSettings {
                             DebuggingSection
@@ -130,97 +126,17 @@ struct ContentView: View {
         }
     }
     
-    // MARK: DarkSword Exploit Testing
-    private var DarkSwordSection: some View {
-        Section(header: HeaderLabel(text: "DarkSword", icon: "wrench.and.screwdriver")) {
-            if !isOffsetsAvailable {
-                Text("No offsets detected! Please go download the kernelcache in settings.")
-            } else {
-                // MARK: Run Exploit
-                Button {
-                    offsets_init()
-                    mgr.run()
-                } label: {
-                    if mgr.dsrunning {
-                        HStack {
-                            ProgressView(value: mgr.dsprogress)
-                                .progressViewStyle(.circular)
-                                .frame(width: 18, height: 18)
-                            Text("Running...")
-                            Spacer()
-                            Text("\(Int(mgr.dsprogress * 100))%")
-                        }
-                    } else {
-                        if mgr.dsready {
-                            HStack {
-                                Text("Ran Exploit")
-                                Spacer()
-                                Image(systemName: "checkmark.circle")
-                                    .foregroundColor(.green)
-                            }
-                        } else if mgr.dsattempted && mgr.dsfailed {
-                            HStack {
-                                Text("Exploit Failed")
-                                Spacer()
-                                Image(systemName: "xmark.circle")
-                                    .foregroundColor(.red)
-                            }
-                        } else {
-                            Text("Run Exploit")
-                        }
-                    }
+    private var AlertsSection: some View {
+        Group {
+            if !mgr.hasOffsets {
+                Button(action: {
+                    showSettingsView.toggle()
+                }) {
+                    CompactAlert(title: "Offsets are missing!", icon: "exclamationmark.triangle.fill", text: "Offsets are required to use DarkSword. Go download them in settings.")
                 }
-                .disabled(mgr.dsrunning)
-                .disabled(mgr.dsready)
-                
-                if enableDebugSettings {
-                    LabeledContent("kernproc") {
-                        Text(String(format: "0x%llx", getrootvnode()))
-                            .font(.system(.body, design: .monospaced))
-                    }
-                    LabeledContent("rootvnode") {
-                        Text(String(format: "0x%llx", getkernproc()))
-                            .font(.system(.body, design: .monospaced))
-                    }
-                    if mgr.dsready {
-                        LabeledContent("kernel_base") {
-                            Text(String(format: "0x%llx", mgr.kernbase))
-                                .font(.system(.body, design: .monospaced))
-                        }
-                        LabeledContent("kernel_slide") {
-                            Text(String(format: "0x%llx", mgr.kernslide))
-                                .font(.system(.body, design: .monospaced))
-                        }
-                    }
-                }
-                // MARK: Init VFS
-                Button(action: { mgr.vfsinit() }) {
-                    if mgr.vfsrunning {
-                        LabeledContent("Initialising VFS...") {
-                            ProgressView(value: mgr.vfsprogress)
-                                .progressViewStyle(.circular)
-                                .frame(width: 18, height: 18)
-                            Text("\(Int(mgr.vfsprogress * 100))%")
-                        }
-                    } else if !mgr.vfsready {
-                        if mgr.vfsattempted && mgr.vfsfailed {
-                            LabeledContent("VFS Init Failed") {
-                                Image(systemName: "xmark.circle")
-                                    .foregroundColor(.red)
-                            }
-                        } else {
-                            Text("Initialise VFS")
-                        }
-                    } else {
-                        HStack {
-                            Text("Initialised VFS")
-                            Spacer()
-                            Image(systemName: "checkmark.circle")
-                                .foregroundColor(.green)
-                        }
-                    }
-                }
-                .disabled(!mgr.dsready || mgr.vfsready || mgr.vfsrunning)
+            }
+            if doubleSystemVersion() >= 26.0 && mgr.hasOffsets {
+                CompactAlert(title: "Notice!", icon: "info.circle", text: "You are running iOS 26, so most tweaks may not work properly. Many tweaks seen here will not make it to a final release due to the fact that many graphical elements are no longer removable with just a path change.")
             }
         }
     }
@@ -246,7 +162,7 @@ struct ContentView: View {
             }
             .modifier(SectionPlatter())
         }
-        .listRowInsets(.dropdownRowInsets)
+        .listRowInsets(.sectionInsets)
     }
     
     // MARK: Debugging Section
@@ -254,7 +170,7 @@ struct ContentView: View {
         Section(header: HeaderLabel(text: "Debugging", icon: "ant")) {
             HStack {
                 TextField("Custom Path", text: $customZeroPath)
-                    .modifier(PrimaryTextFieldStyle())
+                    .modifier(TextFieldBackground())
                 Button(action: {
                     do {
                         try zeroPoC(path: customZeroPath)
@@ -275,55 +191,53 @@ struct ContentView: View {
             }
             .buttonStyle(TranslucentButtonStyle(color: .red))
         }
-        .listRowInsets(.dropdownRowInsets)
+        .listRowInsets(.sectionInsets)
     }
     
     // MARK: Listed Tweaks Section
     // i hate this whole section a lot, but breaking this up into three seperate arrays would suck for management. this is likely the best solution.
     private var ListedTweaksSection: some View {
-        Group {
-            ForEach($tweakArray) { $section in
-                let sectionType: SectionType = section.name == "Custom Tweaks" ? .custom : section.name == "Risky Tweaks" ? .risky : .normal
-                
-                if sectionType == .risky && enableRiskyTweaks || sectionType != .risky && !section.tweaks.isEmpty {
-                    Section(header: HeaderDropdown(text: section.name, icon: section.icon, isExpanded: $section.isExpanded, useItemCount: true, itemCount: section.tweaks.count)) {
-                        if section.isExpanded {
-                            let sectionColor = sectionType == .custom ? .purple : sectionType == .risky ? .red : Color.accentColor
-                            
-                            withAnimation {
-                                ForEach($section.tweaks) { $tweak in
-                                    if version >= tweak.minSupportedVersion && version <= tweak.maxSupportedVersion || enableDebugSettings {
-                                        Button(action: {
-                                            tweak.isOn.toggle()
-                                        }) {
-                                            HStack(spacing: 10) {
-                                                Image(systemName: tweak.icon)
-                                                    .frame(width: 22, height: 20)
-                                                Text(tweak.name)
-                                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                                Image(systemName: $tweak.isOn ? "checkmark.circle.fill" : "circle")
-                                            }
-                                            .frame(maxWidth: .infinity, alignment: .leading)
+        ForEach($tweakArray) { $section in
+            let sectionType: SectionType = section.name == "Custom Tweaks" ? .custom : section.name == "Risky Tweaks" ? .risky : .normal
+            
+            if sectionType == .risky && enableRiskyTweaks || sectionType != .risky && !section.tweaks.isEmpty {
+                Section(header: HeaderDropdown(text: section.name, icon: section.icon, isExpanded: $section.isExpanded, useItemCount: true, itemCount: section.tweaks.count)) {
+                    if section.isExpanded {
+                        let sectionColor = sectionType == .custom ? .purple : sectionType == .risky ? .red : Color.accentColor
+                        
+                        withAnimation {
+                            ForEach($section.tweaks) { $tweak in
+                                if (version >= tweak.minSupportedVersion && version <= tweak.maxSupportedVersion) || enableDebugSettings {
+                                    Button(action: {
+                                        tweak.isOn.toggle()
+                                    }) {
+                                        HStack(spacing: 10) {
+                                            Image(systemName: tweak.icon)
+                                                .frame(width: 22, height: 20)
+                                            Text(tweak.name)
+                                                .frame(maxWidth: .infinity, alignment: .leading)
+                                            Image(systemName: tweak.isOn ? "checkmark.circle.fill" : "circle")
                                         }
-                                        .buttonStyle(PlatterButtonStyle(color: sectionColor))
-                                        .listRowSeparator(.hidden)
-                                        .listRowInsets(.dropdownRowInsets)
-                                        .swipeActions {
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    }
+                                    .buttonStyle(TranslucentButtonStyle(color: sectionColor))
+                                    .listRowSeparator(.hidden)
+                                    .listRowInsets(.sectionInsets)
+                                    .swipeActions {
+                                        Button(action: {
+                                            selectedTweak = tweak
+                                        }) {
+                                            Image(systemName: "info.circle")
+                                        }
+                                        if sectionType == .custom {
                                             Button(action: {
-                                                selectedTweak = tweak
+                                                let customTweaksIndex = tweakArray.firstIndex(where: { $0.name == "Custom Tweaks" }) ?? 0
+                                                
+                                                tweakArray[customTweaksIndex].tweaks.removeAll { $0.name == tweak.name }
                                             }) {
-                                                Image(systemName: "info.circle")
+                                                Image(systemName: "trash")
                                             }
-                                            if sectionType == .custom {
-                                                Button(action: {
-                                                    let customTweaksIndex = tweakArray.firstIndex(where: { $0.name == "Custom Tweaks" }) ?? 0
-                                                    
-                                                    tweakArray[customTweaksIndex].tweaks.removeAll { $0.name == tweak.name }
-                                                }) {
-                                                    Image(systemName: "trash")
-                                                }
-                                                .tint(.red)
-                                            }
+                                            .tint(.red)
                                         }
                                     }
                                 }
@@ -338,25 +252,45 @@ struct ContentView: View {
     // MARK: Applying Buttons
     private var ApplyingButtons: some View {
         VStack {
-            Button(action: {
-                mgr.applyTweaks(tweakData: tweakArray)
-            }) {
-                ButtonLabel(text: "Apply Tweaks", icon: "checkmark")
-            }
-            .buttonStyle(TranslucentButtonStyle(color: .green))
-            HStack {
+            if mgr.chosenExploit == .DarkSword && !mgr.vfsready {
                 Button(action: {
-                    mgr.revertTweaks()
+                    offsets_init()
+                    mgr.run()
                 }) {
-                    ButtonLabel(text: "Revert", icon: "xmark")
+                    if mgr.dsfailed || mgr.vfsfailed {
+                        ButtonLabel(text: "Exploit Failed!", icon: "xmark")
+                    } else if mgr.dsrunning || mgr.vfsrunning {
+                        ButtonLabel(text: "Running Exploit...", icon: "showMeProgressPlease")
+                    } else {
+                        ButtonLabel(text: "Run DarkSword", icon: "ant")
+                    }
                 }
-                .buttonStyle(TranslucentButtonStyle(color: .red))
+                .buttonStyle(FancyButtonStyle(color: mgr.dsfailed || mgr.vfsfailed ? .red : .purple))
+                .disabled(!mgr.hasOffsets || mgr.dsrunning || mgr.vfsrunning)
+                .onChange(of: mgr.dsready) { _ in
+                    mgr.vfsinit()
+                }
+            } else {
                 Button(action: {
-                    mgr.respringDevice()
+                    mgr.applyTweaks(tweakData: tweakArray)
                 }) {
-                    ButtonLabel(text: "Respring", icon: "goforward")
+                    ButtonLabel(text: "Apply Tweaks", icon: "checkmark")
                 }
-                .buttonStyle(TranslucentButtonStyle(color: .orange))
+                .buttonStyle(FancyButtonStyle(color: .green))
+                HStack {
+                    Button(action: {
+                        mgr.revertTweaks()
+                    }) {
+                        ButtonLabel(text: "Revert", icon: "xmark")
+                    }
+                    .buttonStyle(FancyButtonStyle(color: .red))
+                    Button(action: {
+                        mgr.respringDevice()
+                    }) {
+                        ButtonLabel(text: "Respring", icon: "goforward")
+                    }
+                    .buttonStyle(FancyButtonStyle(color: .orange))
+                }
             }
         }
     }

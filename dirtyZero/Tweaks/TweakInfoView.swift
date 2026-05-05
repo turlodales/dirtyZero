@@ -68,7 +68,7 @@ struct TweakInfoView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .modifier(SectionPlatter())
                     .listRowSeparator(.hidden)
-                    .listRowInsets(.dropdownRowInsets)
+                    .listRowInsets(.sectionInsets)
                 }
                 Section(header: HeaderLabel(text: "Target Paths", icon: "character.cursor.ibeam")) {
                     ForEach(tweak.paths, id: \.self) { path in
@@ -76,10 +76,10 @@ struct TweakInfoView: View {
                             .font(.system(.footnote, design: .monospaced))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding()
-                            .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: DesignStyle.defaultComponentRadius))
+                            .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: cornerRad.component))
                     }
                     .listRowSeparator(.hidden)
-                    .listRowInsets(.dropdownRowInsets)
+                    .listRowInsets(.sectionInsets)
                 }
             }
             .listStyle(.plain)

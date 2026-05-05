@@ -1,5 +1,5 @@
 {
-  "originHash" : "e5f120e55d15949a42f700c3379393c52302803bcdaf2ea9ed657179a0276b17",
+  "originHash" : "14d1b5b18fa12c7169145b34bd4aa11cb476f68eeca07d997bd7a54833c68f47",
   "pins" : [
     {
       "identity" : "devicekit",
@@ -8,15 +8,6 @@
       "state" : {
         "revision" : "56b997e8a61707218f9af09f32b2a1d1806fd792",
         "version" : "5.8.0"
-      }
-    },
-    {
-      "identity" : "partyui",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/jailbreakdotparty/PartyUI",
-      "state" : {
-        "revision" : "28dbba40758752297c9052901684c99d0a6cd17a",
-        "version" : "0.4.0"
       }
     }
   ],
